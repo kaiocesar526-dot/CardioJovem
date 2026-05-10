@@ -1,0 +1,2957 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CardioJovem ⚡ Avaliação de Saúde Cardiovascular</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --neon-cyan: #00f5ff;
+    --neon-purple: #bf00ff;
+    --neon-green: #00ff88;
+    --neon-red: #ff003c;
+    --neon-yellow: #ffe600;
+    --bg-dark: #0a0a1a;
+    --bg-card: #0f0f2e;
+    --bg-card2: #13132b;
+    --border-glow: rgba(0,245,255,0.3);
+  }
+  * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
+  .font-game { font-family: 'Orbitron', monospace; }
+  body { background: var(--bg-dark); color: #e0e0ff; min-height: 100vh; }
+
+  /* NEON EFFECTS */
+  .neon-cyan { color: var(--neon-cyan); text-shadow: 0 0 10px var(--neon-cyan), 0 0 30px rgba(0,245,255,0.4); }
+  .neon-purple { color: var(--neon-purple); text-shadow: 0 0 10px var(--neon-purple); }
+  .neon-green { color: var(--neon-green); text-shadow: 0 0 10px var(--neon-green); }
+  .neon-red { color: var(--neon-red); text-shadow: 0 0 10px var(--neon-red); }
+  .neon-yellow { color: var(--neon-yellow); text-shadow: 0 0 10px var(--neon-yellow); }
+
+  /* CARD STYLES */
+  .game-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-glow);
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,245,255,0.08), inset 0 0 40px rgba(0,0,0,0.4);
+  }
+  .game-card-purple {
+    background: var(--bg-card2);
+    border: 1px solid rgba(191,0,255,0.3);
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(191,0,255,0.08);
+  }
+
+  /* BUTTONS */
+  .btn-neon {
+    background: transparent;
+    border: 2px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    padding: 12px 32px;
+    border-radius: 8px;
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    box-shadow: 0 0 15px rgba(0,245,255,0.2);
+  }
+  .btn-neon:hover {
+    background: rgba(0,245,255,0.1);
+    box-shadow: 0 0 25px rgba(0,245,255,0.5);
+    transform: translateY(-2px);
+  }
+  .btn-neon-purple {
+    border-color: var(--neon-purple);
+    color: var(--neon-purple);
+    box-shadow: 0 0 15px rgba(191,0,255,0.2);
+  }
+  .btn-neon-purple:hover {
+    background: rgba(191,0,255,0.1);
+    box-shadow: 0 0 25px rgba(191,0,255,0.5);
+  }
+  .btn-neon-green {
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+    box-shadow: 0 0 15px rgba(0,255,136,0.2);
+  }
+  .btn-neon-green:hover {
+    background: rgba(0,255,136,0.1);
+    box-shadow: 0 0 25px rgba(0,255,136,0.5);
+  }
+  .btn-solid-cyan {
+    background: linear-gradient(135deg, #00c8ff, #0080ff);
+    color: #000;
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    letter-spacing: 1px;
+    padding: 12px 32px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .btn-solid-cyan:hover { filter: brightness(1.2); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,200,255,0.4); }
+
+  /* SCANLINE EFFECT */
+  .scanlines::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* GRID BACKGROUND */
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* PROGRESS BAR NEON */
+  .progress-neon {
+    background: rgba(0,245,255,0.15);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid rgba(0,245,255,0.2);
+  }
+  .progress-fill-cyan { background: linear-gradient(90deg, #00f5ff, #0080ff); box-shadow: 0 0 10px rgba(0,245,255,0.6); }
+  .progress-fill-green { background: linear-gradient(90deg, #00ff88, #00cc44); box-shadow: 0 0 10px rgba(0,255,136,0.6); }
+  .progress-fill-red { background: linear-gradient(90deg, #ff003c, #ff6600); box-shadow: 0 0 10px rgba(255,0,60,0.6); }
+  .progress-fill-yellow { background: linear-gradient(90deg, #ffe600, #ff9900); box-shadow: 0 0 10px rgba(255,230,0,0.6); }
+
+  /* CHAT */
+  .bubble-bot {
+    background: linear-gradient(135deg, #0f1935, #1a0a2e);
+    border: 1px solid rgba(0,245,255,0.3);
+    border-radius: 16px 16px 16px 4px;
+    box-shadow: 0 0 15px rgba(0,245,255,0.1);
+    animation: fadeUp 0.3s ease;
+  }
+  .bubble-user {
+    background: linear-gradient(135deg, #0a1f3a, #001845);
+    border: 1px solid rgba(0,136,255,0.4);
+    border-radius: 16px 16px 4px 16px;
+    animation: fadeUp 0.3s ease;
+  }
+  @keyframes fadeUp { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+
+  /* CHOICE BUTTONS */
+  .choice-btn {
+    background: rgba(0,245,255,0.05);
+    border: 1px solid rgba(0,245,255,0.3);
+    color: #00f5ff;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+  }
+  .choice-btn:hover {
+    background: rgba(0,245,255,0.15);
+    border-color: #00f5ff;
+    box-shadow: 0 0 15px rgba(0,245,255,0.3);
+    transform: translateY(-1px);
+  }
+
+  /* INPUT */
+  .game-input {
+    background: rgba(0,245,255,0.05);
+    border: 1px solid rgba(0,245,255,0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: #e0e0ff;
+    outline: none;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+  }
+  .game-input:focus {
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 15px rgba(0,245,255,0.2);
+  }
+  .game-input::placeholder { color: rgba(200,200,255,0.3); }
+
+  /* TYPING */
+  .typing-dot { animation: blink 1.2s infinite; width: 8px; height: 8px; background: #00f5ff; border-radius: 50%; }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%,80%,100%{ opacity:0.3; transform:scale(0.8); } 40%{ opacity:1; transform:scale(1.2); } }
+
+  /* MEDAL */
+  .medal-card {
+    background: var(--bg-card2);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    transition: all 0.3s;
+    cursor: default;
+  }
+  .medal-card:hover { transform: translateY(-4px); }
+  .medal-platinum { border: 2px solid #E5E4E2; box-shadow: 0 0 20px rgba(229,228,226,0.4); }
+  .medal-gold { border: 2px solid #FFD700; box-shadow: 0 0 20px rgba(255,215,0,0.4); }
+  .medal-silver { border: 2px solid #C0C0C0; box-shadow: 0 0 15px rgba(192,192,192,0.3); }
+  .medal-bronze { border: 2px solid #CD7F32; box-shadow: 0 0 10px rgba(205,127,50,0.3); }
+
+  /* LEVEL BADGE */
+  .level-legendary { background: linear-gradient(135deg, #ffd700,#ff6600); color: #000; }
+  .level-epic { background: linear-gradient(135deg, #bf00ff,#6600ff); }
+  .level-rare { background: linear-gradient(135deg, #00aaff,#0044ff); }
+  .level-uncommon { background: linear-gradient(135deg, #00ff88,#00aa44); color: #000; }
+  .level-common { background: linear-gradient(135deg, #888,#444); }
+  .level-iniciante { background: linear-gradient(135deg, #553,#332); }
+
+  /* TABS */
+  .tab-active {
+    border-bottom: 2px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px rgba(0,245,255,0.6);
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #0a0a1a; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,245,255,0.3); border-radius: 3px; }
+
+  /* GLITCH EFFECT */
+  @keyframes glitch {
+    0%,90%,100% { transform: translate(0); }
+    92% { transform: translate(-2px,1px); }
+    94% { transform: translate(2px,-1px); }
+    96% { transform: translate(-1px,2px); }
+  }
+  .glitch { animation: glitch 4s infinite; }
+
+  /* PARTICLE BACKGROUND */
+  .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+  .star { position: absolute; width: 2px; height: 2px; background: rgba(0,245,255,0.6); border-radius: 50%; animation: twinkle var(--dur) infinite; }
+  @keyframes twinkle { 0%,100%{opacity:0.2;} 50%{opacity:1;} }
+
+  /* HEART BEAT */
+  .heartbeat { animation: heartbeat 1.5s ease-in-out infinite; }
+  @keyframes heartbeat { 0%,100%{transform:scale(1);} 14%{transform:scale(1.15);} 28%{transform:scale(1);} 42%{transform:scale(1.1);} 70%{transform:scale(1);} }
+
+  /* RECOMMENDATION CARD */
+  .rec-card {
+    background: linear-gradient(135deg, var(--bg-card2), var(--bg-card));
+    border-left: 4px solid var(--neon-cyan);
+    border-radius: 0 12px 12px 0;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    transition: all 0.2s;
+  }
+  .rec-card:hover { transform: translateX(4px); }
+  .rec-card.warning { border-left-color: var(--neon-yellow); }
+  .rec-card.danger { border-left-color: var(--neon-red); }
+  .rec-card.good { border-left-color: var(--neon-green); }
+
+  /* STAT WIDGET */
+  .stat-widget {
+    background: var(--bg-card2);
+    border: 1px solid rgba(0,245,255,0.15);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+</style>
+</head>
+<body class="grid-bg relative">
+
+<!-- PARTÍCULAS DE FUNDO -->
+<div class="stars" id="stars"></div>
+
+<div id="app" class="relative z-10">
+
+<!-- ========== TELA INICIAL ========== -->
+<div id="screen-home" class="min-h-screen pb-16" style="background:var(--bg-dark)">
+
+  <!-- ── TOP NAV ── -->
+  <nav style="background:rgba(5,5,20,0.95);border-bottom:1px solid rgba(0,245,255,0.15);backdrop-filter:blur(12px);position:sticky;top:0;z-index:50;">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="heartbeat text-xl">❤️</span>
+        <span class="font-game font-black text-sm tracking-widest" style="color:#fff">CARDIO<span class="neon-cyan">JOVEM</span></span>
+      </div>
+      <!-- Nav logado -->
+      <div id="nav-logged-in" class="hidden flex items-center gap-2">
+        <button onclick="showScreen('screen-profile')" class="btn-neon text-xs py-1 px-3">👤 PERFIL</button>
+        <button onclick="showMyResults()" class="btn-neon text-xs py-1 px-3" style="border-color:var(--neon-green);color:var(--neon-green)">📊 RESULTADOS</button>
+        <button onclick="doLogout()" class="text-xs opacity-30 hover:opacity-60 ml-1">Sair</button>
+      </div>
+      <!-- Nav deslogado -->
+      <div id="nav-logged-out" class="flex items-center gap-2">
+        <button onclick="showScreen('screen-login')" class="btn-neon text-xs py-1 px-3">Entrar</button>
+        <button onclick="showScreen('screen-register')" class="btn-solid-cyan text-xs py-1 px-3">Criar conta</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <div class="max-w-4xl mx-auto px-4">
+
+    <!-- HERO: deslogado -->
+    <div id="hero-guest" class="text-center py-14">
+      <div class="text-6xl heartbeat mb-4">❤️</div>
+      <div class="font-game text-xs tracking-widest neon-cyan mb-2 uppercase">// Sistema de Pesquisa Científica</div>
+      <h1 class="font-game text-5xl sm:text-6xl font-black glitch mb-2" style="color:#fff;text-shadow:0 0 30px rgba(0,245,255,0.5)">CARDIO<span class="neon-cyan">JOVEM</span></h1>
+      <p class="text-sm opacity-50 mb-2">Estratificação precoce de risco cardiovascular em jovens de 15 a 29 anos</p>
+      <p class="font-game text-xs neon-purple mb-8">⚡ Pesquisa científica • Gamificado • 100% gratuito ⚡</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center mb-10">
+        <button onclick="showScreen('screen-login')" class="btn-solid-cyan text-base py-4 px-10 font-game tracking-widest">🎮 COMEÇAR AGORA</button>
+        <button onclick="showScreen('screen-researcher-login')" class="btn-neon btn-neon-purple py-4 px-8 text-sm">🔬 ACESSO PESQUISADOR</button>
+      </div>
+      <!-- Nivéis -->
+      <div class="flex flex-wrap gap-2 justify-center text-xs mb-2">
+        <span class="px-3 py-1 rounded-full level-iniciante font-game">🌱 INICIANTE</span>
+        <span class="px-3 py-1 rounded-full level-common font-game">🌟 COMUM</span>
+        <span class="px-3 py-1 rounded-full level-uncommon font-game">⚡ INCOMUM</span>
+        <span class="px-3 py-1 rounded-full level-rare font-game text-white">💎 RARO</span>
+        <span class="px-3 py-1 rounded-full level-epic font-game">💜 ÉPICO</span>
+        <span class="px-3 py-1 rounded-full level-legendary font-game">👑 LENDÁRIO</span>
+      </div>
+    </div>
+
+    <!-- HERO: logado -->
+    <div id="hero-user" class="hidden py-8">
+      <!-- Boas-vindas + XP -->
+      <div class="game-card p-5 mb-4 flex flex-col sm:flex-row items-center gap-4">
+        <div class="text-4xl" id="home-nivel-icon">🌱</div>
+        <div class="flex-1 text-center sm:text-left">
+          <div class="font-game text-xs neon-cyan tracking-widest mb-1">// BEM-VINDO DE VOLTA</div>
+          <div class="font-game text-xl font-black text-white" id="home-user-name">Jogador</div>
+          <div class="flex items-center gap-3 mt-1 justify-center sm:justify-start flex-wrap">
+            <span class="font-game text-xs" id="home-nivel-label" style="color:#ffe600">NÍVEL: —</span>
+            <span class="font-game text-xs opacity-40">|</span>
+            <span class="font-game text-xs" id="home-risco-label">RISCO: —</span>
+            <span class="font-game text-xs opacity-40">|</span>
+            <span class="font-game text-xs neon-yellow" id="home-xp-label">0 / 1000 XP</span>
+          </div>
+        </div>
+        <!-- XP Bar -->
+        <div class="w-full sm:w-40">
+          <div class="text-xs font-game opacity-40 mb-1 text-center">PROGRESSO XP</div>
+          <div class="progress-neon h-3">
+            <div class="progress-fill-green h-3 transition-all" id="home-xp-bar" style="width:0%"></div>
+          </div>
+          <div class="text-xs font-game opacity-30 text-center mt-1" id="home-xp-pct">0%</div>
+        </div>
+      </div>
+
+      <!-- Ações rápidas logado -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+        <button onclick="showScreen('screen-consent')" class="game-card p-4 text-center hover:scale-105 transition-transform cursor-pointer w-full" style="border-color:var(--neon-cyan)">
+          <div class="text-2xl mb-1">🤖</div>
+          <div class="font-game text-xs neon-cyan">QUESTIONÁRIO</div>
+          <div class="text-xs opacity-40 mt-1">Responder</div>
+        </button>
+        <button onclick="showMyResults()" class="game-card p-4 text-center hover:scale-105 transition-transform cursor-pointer w-full" style="border-color:var(--neon-green)">
+          <div class="text-2xl mb-1">📊</div>
+          <div class="font-game text-xs neon-green">RESULTADOS</div>
+          <div class="text-xs opacity-40 mt-1">Ver scores</div>
+        </button>
+        <button onclick="showScreen('screen-profile')" class="game-card p-4 text-center hover:scale-105 transition-transform cursor-pointer w-full" style="border-color:var(--neon-purple)">
+          <div class="text-2xl mb-1">👤</div>
+          <div class="font-game text-xs neon-purple">MEU PERFIL</div>
+          <div class="text-xs opacity-40 mt-1">Ver dados</div>
+        </button>
+        <button onclick="homeShowGuia()" class="game-card p-4 text-center hover:scale-105 transition-transform cursor-pointer w-full" style="border-color:var(--neon-yellow)">
+          <div class="text-2xl mb-1">💡</div>
+          <div class="font-game text-xs neon-yellow">GUIA SAÚDE</div>
+          <div class="text-xs opacity-40 mt-1">Dicas</div>
+        </button>
+      </div>
+
+      <!-- Mini scores se tiver avaliação -->
+      <div id="home-scores-preview" class="hidden game-card p-5 mb-4">
+        <div class="flex items-center justify-between mb-3">
+          <div class="font-game text-xs neon-cyan tracking-widest">// ÚLTIMO RESULTADO</div>
+          <button onclick="showMyResults()" class="font-game text-xs neon-cyan hover:underline">VER COMPLETO ↗</button>
+        </div>
+        <div id="home-scores-bars" class="space-y-2"></div>
+        <div class="text-xs opacity-30 font-game mt-3 text-center" id="home-eval-date"></div>
+      </div>
+
+      <!-- Recomendação top urgente -->
+      <div id="home-top-rec" class="hidden mb-4"></div>
+
+    </div>
+
+    <!-- ── SEÇÃO "COMO FUNCIONA" (sempre visível) ── -->
+    <div class="mb-6">
+      <div class="font-game text-xs neon-cyan tracking-widest uppercase mb-4">// Como funciona</div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="game-card p-5 text-center">
+          <div class="text-3xl mb-3">🤖</div>
+          <div class="font-game text-sm neon-cyan mb-2">1. CARDIOBOT</div>
+          <p class="text-xs opacity-60 leading-relaxed">Responda ~31 perguntas sobre seus hábitos de vida em uma conversa gamificada com nosso chatbot inteligente.</p>
+        </div>
+        <div class="game-card p-5 text-center">
+          <div class="text-3xl mb-3">⚡</div>
+          <div class="font-game text-sm neon-purple mb-2">2. PONTUAÇÃO</div>
+          <p class="text-xs opacity-60 leading-relaxed">Ganhe XP em 7 eixos de saúde: Atividade, Alimentação, Sono, Composição Corporal, Álcool, Tabagismo e Genética.</p>
+        </div>
+        <div class="game-card p-5 text-center">
+          <div class="text-3xl mb-3">📊</div>
+          <div class="font-game text-sm neon-green mb-2">3. RESULTADO</div>
+          <p class="text-xs opacity-60 leading-relaxed">Descubra seu nível cardiovascular, receba recomendações personalizadas por email e desbloqueie medalhas.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 7 EIXOS ── -->
+    <div class="mb-6">
+      <div class="font-game text-xs neon-cyan tracking-widest uppercase mb-4">// Os 7 Eixos de Avaliação</div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="game-card p-3 text-center"><div class="text-xl mb-1">⚡</div><div class="font-game text-xs neon-cyan">Atividade Física</div><div class="text-xs opacity-40 mt-1">200 XP</div></div>
+        <div class="game-card p-3 text-center"><div class="text-xl mb-1">🍔</div><div class="font-game text-xs neon-green">Alimentação</div><div class="text-xs opacity-40 mt-1">180 XP</div></div>
+        <div class="game-card p-3 text-center"><div class="text-xl mb-1">🧠</div><div class="font-game text-xs neon-purple">Saúde Mental</div><div class="text-xs opacity-40 mt-1">160 XP</div></div>
+        <div class="game-card p-3 text-center"><div class="text-xl mb-1">⚖️</div><div class="font-game text-xs neon-yellow">Composição</div><div class="text-xs opacity-40 mt-1">180 XP</div></div>
+        <div class="game-card p-3 text-center"><div class="text-xl mb-1">🍺</div><div class="font-game text-xs" style="color:#ff6666">Álcool</div><div class="text-xs opacity-40 mt-1">80 XP</div></div>
+        <div class="game-card p-3 text-center"><div class="text-xl mb-1">🚬</div><div class="font-game text-xs" style="color:#ff9966">Tabagismo</div><div class="text-xs opacity-40 mt-1">130 XP</div></div>
+        <div class="game-card p-3 text-center"><div class="text-xl mb-1">🧬</div><div class="font-game text-xs neon-cyan">Histórico Fam.</div><div class="text-xs opacity-40 mt-1">70 XP</div></div>
+        <div class="game-card p-3 text-center" style="border-color:rgba(255,230,0,0.3);background:rgba(255,230,0,0.04)">
+          <div class="text-xl mb-1">🏆</div>
+          <div class="font-game text-xs neon-yellow">TOTAL</div>
+          <div class="text-xs opacity-60 mt-1 font-game">1000 XP</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── AVISO CIENTÍFICO ── -->
+    <div class="rounded-xl p-4 mb-6 text-center" style="background:rgba(0,245,255,0.04);border:1px solid rgba(0,245,255,0.15)">
+      <div class="font-game text-xs neon-cyan tracking-widest mb-2">// BASE CIENTÍFICA</div>
+      <p class="text-xs opacity-50 leading-relaxed">Baseado em: <strong class="text-white opacity-80">Kotseva et al. (2014) · Mozaffarian (2016) · Ekelund et al. (2019) · St-Onge et al. (2016) · Widmer et al. (2015) · Poole et al. (2018) · Benowitz &amp; Fraiman (2017)</strong></p>
+    </div>
+
+    <!-- CTA final deslogado -->
+    <div id="cta-guest" class="text-center py-4">
+      <button onclick="showScreen('screen-login')" class="btn-solid-cyan text-base py-4 px-12 font-game tracking-widest">🎮 PARTICIPAR DA PESQUISA</button>
+      <p class="text-xs opacity-30 mt-3">Gratuito · Anônimo · ~5 minutos</p>
+    </div>
+
+    <!-- CTA logado -->
+    <div id="cta-user" class="hidden text-center py-4">
+      <button onclick="showScreen('screen-consent')" class="btn-solid-cyan text-base py-4 px-12 font-game tracking-widest">🔄 REFAZER AVALIAÇÃO</button>
+      <p class="text-xs opacity-30 mt-3" id="cta-refazer-label">Atualize seus dados</p>
+    </div>
+
+  </div><!-- /max-w-4xl -->
+</div>
+
+<!-- ========== LOGIN ========== -->
+<div id="screen-login" class="hidden min-h-screen flex items-center justify-center p-6">
+  <div class="max-w-md w-full">
+    <div class="game-card p-8">
+      <div class="text-center mb-6">
+        <div class="font-game text-xs neon-cyan tracking-widest uppercase mb-2">// ACESSO DO JOGADOR</div>
+        <h2 class="font-game text-2xl font-bold text-white">ENTRAR</h2>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="text-xs font-game neon-cyan tracking-widest uppercase block mb-2">EMAIL</label>
+          <input type="email" id="login-email" placeholder="seu@email.com" class="game-input w-full">
+        </div>
+        <div>
+          <label class="text-xs font-game neon-cyan tracking-widest uppercase block mb-2">SENHA</label>
+          <input type="password" id="login-password" placeholder="••••••••" class="game-input w-full" onkeypress="if(event.key==='Enter')doLogin()">
+        </div>
+        <div id="login-error" class="hidden text-red-400 text-sm font-game text-center"></div>
+        <button onclick="doLogin()" class="btn-solid-cyan w-full py-3 text-sm">ENTRAR NO JOGO</button>
+        <div class="text-center text-sm opacity-50">
+          Não tem conta? <button onclick="showScreen('screen-register')" class="neon-cyan hover:underline">Criar conta</button>
+        </div>
+      </div>
+      <div class="mt-4 text-center">
+        <button onclick="showScreen('screen-home')" class="text-xs opacity-30 hover:opacity-60">← Voltar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== CADASTRO ========== -->
+<div id="screen-register" class="hidden min-h-screen flex items-center justify-center p-6">
+  <div class="max-w-md w-full">
+    <div class="game-card p-8">
+      <div class="text-center mb-6">
+        <div class="font-game text-xs neon-cyan tracking-widest uppercase mb-2">// CRIAR PERSONAGEM</div>
+        <h2 class="font-game text-2xl font-bold text-white">NOVO JOGADOR</h2>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="text-xs font-game neon-cyan tracking-widest uppercase block mb-2">NOME</label>
+          <input type="text" id="reg-nome" placeholder="Como quer ser chamado?" class="game-input w-full">
+        </div>
+        <div>
+          <label class="text-xs font-game neon-cyan tracking-widest uppercase block mb-2">EMAIL</label>
+          <input type="email" id="reg-email" placeholder="seu@email.com" class="game-input w-full">
+        </div>
+        <div>
+          <label class="text-xs font-game neon-cyan tracking-widest uppercase block mb-2">SENHA</label>
+          <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" class="game-input w-full">
+        </div>
+        <div class="flex items-start gap-3">
+          <input type="checkbox" id="reg-lembretes" class="mt-1 accent-cyan-400 w-4 h-4">
+          <label for="reg-lembretes" class="text-sm opacity-70 cursor-pointer">
+            Quero receber <span class="neon-cyan">lembretes e recomendações</span> de saúde cardiovascular por email
+          </label>
+        </div>
+        <div id="register-error" class="hidden text-red-400 text-sm font-game text-center"></div>
+        <button onclick="doRegister()" class="btn-solid-cyan w-full py-3 text-sm">CRIAR CONTA</button>
+        <div class="text-center text-sm opacity-50">
+          Já tem conta? <button onclick="showScreen('screen-login')" class="neon-cyan hover:underline">Entrar</button>
+        </div>
+      </div>
+      <div class="mt-4 text-center">
+        <button onclick="showScreen('screen-home')" class="text-xs opacity-30 hover:opacity-60">← Voltar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== CONSENTIMENTO ========== -->
+<div id="screen-consent" class="hidden min-h-screen flex items-center justify-center p-6">
+  <div class="max-w-2xl w-full">
+    <div class="game-card p-8">
+      <div class="text-center mb-6">
+        <div class="font-game text-xs neon-cyan tracking-widest uppercase mb-2">// MISSÃO ACEITA?</div>
+        <h2 class="font-game text-2xl font-bold text-white">TERMO DE PARTICIPAÇÃO</h2>
+      </div>
+      <div class="game-card-purple p-5 mb-6 text-sm opacity-80 max-h-60 overflow-y-auto leading-relaxed space-y-3">
+        <p><span class="neon-cyan font-semibold">TÍTULO DA PESQUISA:</span> Desenvolvimento e validação de agente conversacional gamificado com inteligência artificial para estratificação precoce do risco cardiovascular em jovens adultos brasileiros.</p>
+        <p><span class="neon-cyan font-semibold">OBJETIVO:</span> Avaliar fatores de risco cardiovascular comportamentais em jovens de 15 a 29 anos por meio de um chatbot gamificado com IA.</p>
+        <p><span class="neon-cyan font-semibold">PARTICIPAÇÃO:</span> Voluntária. Você responderá perguntas sobre hábitos de vida. Pode desistir a qualquer momento sem prejuízo algum.</p>
+        <p><span class="neon-cyan font-semibold">CONFIDENCIALIDADE:</span> Seus dados são anônimos e usados apenas para fins científicos. Nenhuma informação pessoal será divulgada.</p>
+        <p><span class="neon-cyan font-semibold">RISCOS:</span> Mínimos. Apenas respostas sobre hábitos cotidianos, sem coleta de dados clínicos.</p>
+        <p><span class="neon-cyan font-semibold">BENEFÍCIOS:</span> Relatório personalizado do seu perfil cardiovascular + medalhas e recomendações de saúde baseadas em evidências.</p>
+        <p><span class="neon-cyan font-semibold">BASE LEGAL (LGPD):</span> Consentimento livre e informado (art. 7º, I). Dados ficam sob responsabilidade da equipe de pesquisa.</p>
+      </div>
+      <div class="mb-6">
+        <label class="flex items-start gap-3 cursor-pointer group">
+          <input type="checkbox" id="consent-check" class="mt-1 w-5 h-5 accent-cyan-400">
+          <span class="text-sm group-hover:text-cyan-300 transition">Li, entendi e <strong>aceito participar voluntariamente</strong> desta pesquisa. Tenho entre 15 e 29 anos.</span>
+        </label>
+      </div>
+      <div class="flex gap-3">
+        <button onclick="showScreen('screen-login')" class="btn-neon flex-1 py-3 text-xs">← VOLTAR</button>
+        <button onclick="startChat()" id="btn-consent" disabled
+          class="btn-solid-cyan flex-1 py-3 text-sm opacity-40 cursor-not-allowed transition-all">
+          ACEITAR E JOGAR →
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== CHATBOT ========== -->
+<div id="screen-chat" class="hidden min-h-screen flex flex-col" style="background:var(--bg-dark)">
+  <!-- HUD Header -->
+  <div class="sticky top-0 z-20" style="background: rgba(10,10,26,0.95); border-bottom:1px solid rgba(0,245,255,0.2); backdrop-filter:blur(10px);">
+    <div class="flex items-center gap-3 px-4 py-3">
+      <div class="text-2xl heartbeat">🤖</div>
+      <div>
+        <div class="font-game text-xs neon-cyan tracking-widest">CARDIOBOT v2.0</div>
+        <div class="text-xs opacity-40" id="section-display">Inicializando...</div>
+      </div>
+      <div class="ml-auto flex items-center gap-4">
+        <div class="text-right">
+          <div class="font-game text-xs opacity-40">XP</div>
+          <div class="font-game text-sm neon-yellow" id="points-display">0</div>
+        </div>
+        <div class="text-right">
+          <div class="font-game text-xs opacity-40">PROGRESSO</div>
+          <div class="font-game text-sm neon-cyan" id="progress-text">0%</div>
+        </div>
+      </div>
+    </div>
+    <div class="progress-neon h-2 mx-0">
+      <div id="progress-bar" class="progress-fill-cyan h-2 transition-all duration-500" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Chat messages -->
+  <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 pb-40"></div>
+
+  <!-- Input area -->
+  <div class="fixed bottom-0 left-0 right-0 p-4" style="background:rgba(10,10,26,0.97); border-top:1px solid rgba(0,245,255,0.15); backdrop-filter:blur(10px);">
+    <div id="quick-replies" class="flex flex-wrap gap-2 mb-3"></div>
+    <div class="flex gap-2">
+      <input type="text" id="chat-input" placeholder="Digite sua resposta..."
+        class="game-input flex-1" onkeypress="if(event.key==='Enter')sendMessage()" oninput="filterChatInput(this)">
+      <button onclick="sendMessage()" class="btn-solid-cyan px-5 py-2 text-sm">ENVIAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== RESULTADO ========== -->
+<div id="screen-result" class="hidden min-h-screen p-4 pb-16" style="background:var(--bg-dark)">
+  <div class="max-w-2xl mx-auto">
+    <!-- Header resultado -->
+    <div class="game-card p-6 text-center mb-6 relative overflow-hidden">
+      <div class="absolute inset-0 opacity-10" id="result-bg-gradient" style="background:linear-gradient(135deg,#00f5ff,#bf00ff)"></div>
+      <div class="relative z-10">
+        <div class="font-game text-xs tracking-widest opacity-50 uppercase mb-3">// MISSÃO CONCLUÍDA</div>
+        <div class="text-5xl mb-3" id="result-main-icon">⚡</div>
+        <div class="font-game text-3xl font-black mb-1 text-white" id="result-nivel">NÍVEL</div>
+        <div class="font-game text-xl mb-4" id="result-risco-label">Risco Baixo</div>
+        <div class="inline-flex items-center gap-3 game-card-purple px-6 py-3 rounded-xl mb-4">
+          <span class="font-game text-xs opacity-50 uppercase">PONTUAÇÃO FINAL</span>
+          <span class="font-game text-3xl neon-yellow font-black" id="result-pontos">0</span>
+          <span class="font-game text-xs opacity-50">/ 1000 XP</span>
+        </div>
+        <!-- Barra de progresso de nível -->
+        <div class="w-full px-2 mb-3">
+          <div class="flex justify-between text-xs font-game opacity-50 mb-1">
+            <span>SEU PROGRESSO</span>
+            <span id="result-faltam-label">faltam 0 XP para o próximo nível</span>
+          </div>
+          <div class="progress-neon h-4 w-full">
+            <div class="progress-fill-cyan h-4 transition-all" id="result-xp-bar" style="width:0%"></div>
+          </div>
+          <div class="flex justify-between text-xs mt-1 opacity-30 font-game">
+            <span>0</span><span>300</span><span>450</span><span>600</span><span>750</span><span>900</span><span>1000</span>
+          </div>
+        </div>
+        <!-- Escala de níveis -->
+        <div id="result-levels-scale" class="w-full grid grid-cols-3 gap-1 px-2 text-center"></div>
+        <!-- Aviso de risco cardiovascular -->
+        <div id="result-risco-info" class="w-full mt-4 mx-2 rounded-xl p-4 text-left text-sm" style="border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.3)"></div>
+      </div>
+    </div>
+
+    <!-- TABS DO RESULTADO -->
+    <div class="game-card mb-6">
+      <div class="flex border-b border-white/10">
+        <button onclick="showResultTab('tab-scores')" class="result-tab flex-1 py-3 text-xs font-game tracking-widest tab-active uppercase transition-all" data-rtab="tab-scores">📊 Scores</button>
+        <button onclick="showResultTab('tab-medals')" class="result-tab flex-1 py-3 text-xs font-game tracking-widest opacity-40 uppercase transition-all" data-rtab="tab-medals">🏅 Medalhas</button>
+        <button onclick="showResultTab('tab-recs')" class="result-tab flex-1 py-3 text-xs font-game tracking-widest opacity-40 uppercase transition-all" data-rtab="tab-recs">💡 Guia</button>
+      </div>
+
+      <!-- Tab Scores -->
+      <div id="tab-scores" class="p-5">
+        <div class="font-game text-xs neon-cyan tracking-widest uppercase mb-4">// EIXOS DE AVALIAÇÃO</div>
+        <div id="axes-breakdown" class="space-y-4"></div>
+        <div class="mt-4 p-3 rounded-xl text-xs opacity-50 text-center" style="border:1px solid rgba(0,245,255,0.1)">
+          💡 <strong>+pontos = menor risco cardiovascular.</strong> Baseado em: Kotseva et al. (2014) · Mozaffarian (2016) · Ekelund et al. (2019) · St-Onge et al. (2016) · Benowitz &amp; Fraiman (2017).
+        </div>
+      </div>
+
+      <!-- Tab Medalhas -->
+      <div id="tab-medals" class="hidden p-5">
+        <div class="font-game text-xs neon-cyan tracking-widest uppercase mb-4">// CONQUISTAS DESBLOQUEADAS</div>
+        <div id="medals-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+        <div class="mt-4 text-center text-xs opacity-40 font-game">
+          BRONZE → PRATA → OURO → PLATINA
+        </div>
+      </div>
+
+      <!-- Tab Recomendações -->
+      <div id="tab-recs" class="hidden p-5">
+        <div class="font-game text-xs neon-cyan tracking-widest uppercase mb-4">// GUIA DE MISSÕES DE SAÚDE</div>
+        <div id="recommendations-detail" class="space-y-4"></div>
+      </div>
+    </div>
+
+    <!-- Aviso clínico no resultado -->
+    <div class="rounded-xl p-4 mb-4" style="background:rgba(255,230,0,0.06);border:1px solid rgba(255,230,0,0.3)">
+      <div class="flex gap-2 items-start">
+        <span class="text-lg flex-shrink-0">⚠️</span>
+        <p class="text-xs opacity-60 leading-relaxed"><strong class="neon-yellow">Aviso:</strong> Esta avaliação tem caráter educativo e preventivo. <strong>Não substitui consulta médica, diagnóstico ou tratamento especializado.</strong> Serve como parâmetro para identificar possibilidades de risco cardiovascular com base em hábitos de vida. Consulte um médico para avaliação clínica completa.</p>
+      </div>
+    </div>
+    <div class="flex flex-wrap gap-3 justify-center pb-8">
+      <button onclick="showScreen('screen-home')" class="btn-neon text-xs py-3 px-5">🏠 INÍCIO</button>
+      <button onclick="showMyResults()" class="btn-solid-cyan text-xs py-3 px-5">📊 MEUS RESULTADOS</button>
+      <button onclick="showScreen('screen-profile')" class="btn-neon btn-neon-purple text-xs py-3 px-5">👤 PERFIL</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PERFIL DO USUÁRIO ========== -->
+<div id="screen-profile" class="hidden min-h-screen p-4" style="background:var(--bg-dark)">
+  <div class="max-w-2xl mx-auto">
+    <div class="flex items-center gap-3 mb-6 pt-4">
+      <button onclick="voltarDoProfile()" class="btn-neon text-xs py-2 px-4">← VOLTAR</button>
+      <div class="font-game text-sm neon-cyan tracking-widest uppercase">// MEU PERFIL</div>
+      <button onclick="doLogout()" class="btn-neon btn-neon-purple text-xs py-2 px-4 ml-auto">SAIR</button>
+    </div>
+
+    <div class="game-card p-6 mb-6">
+      <div class="flex items-center gap-4 mb-6">
+        <div class="w-16 h-16 rounded-full flex items-center justify-center text-3xl" style="background:linear-gradient(135deg,#00f5ff22,#bf00ff22); border:2px solid rgba(0,245,255,0.4)">
+          ❤️
+        </div>
+        <div>
+          <div class="font-game text-lg font-bold text-white" id="profile-name">JOGADOR</div>
+          <div class="text-sm opacity-50" id="profile-email">—</div>
+          <div class="mt-1 px-3 py-1 rounded-full text-xs font-game inline-block" id="profile-level-badge">INICIANTE</div>
+        </div>
+        <div class="ml-auto text-right">
+          <div class="font-game text-2xl neon-yellow font-black" id="profile-points">0</div>
+          <div class="font-game text-xs opacity-40">/ 1000 XP</div>
+        </div>
+      </div>
+
+      <!-- Barra de XP -->
+      <div class="mb-2">
+        <div class="flex justify-between text-xs opacity-50 mb-1 font-game">
+          <span>XP TOTAL</span>
+          <span id="profile-xp-label">0/1000</span>
+        </div>
+        <div class="progress-neon h-4">
+          <div class="progress-fill-cyan h-4 rounded-sm transition-all" id="profile-xp-bar" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Última avaliação -->
+    <div class="game-card p-6 mb-6" id="profile-last-eval" style="display:none">
+      <div class="flex items-center justify-between mb-3">
+        <div class="font-game text-xs neon-cyan tracking-widest uppercase">// ÚLTIMA AVALIAÇÃO</div>
+        <button onclick="showMyResults()" class="btn-neon text-xs py-1 px-3" style="font-size:10px">📊 VER COMPLETO</button>
+      </div>
+      <div id="profile-eval-header"></div>
+      <div id="profile-eval-date" class="text-xs opacity-30 font-game mb-3"></div>
+      <div id="profile-scores" class="space-y-3"></div>
+    </div>
+    <!-- Aviso clínico no perfil -->
+    <div class="rounded-xl p-4 mb-6" id="profile-aviso-clinico" style="display:none;background:rgba(255,230,0,0.06);border:1px solid rgba(255,230,0,0.3)">
+      <div class="flex gap-2 items-start">
+        <span class="text-lg flex-shrink-0">⚠️</span>
+        <p class="text-xs opacity-60 leading-relaxed">Esta avaliação tem caráter <strong>educativo e preventivo</strong>. Não substitui consulta médica, diagnóstico clínico ou tratamento especializado. Consulte sempre um médico para avaliação completa.</p>
+      </div>
+    </div>
+
+    <div class="game-card p-6 mb-6" id="profile-no-eval">
+      <div class="text-center py-8">
+        <div class="text-4xl mb-3">🎮</div>
+        <div class="font-game text-sm opacity-50 mb-4">VOCÊ AINDA NÃO FEZ A AVALIAÇÃO</div>
+        <button onclick="goToConsent()" class="btn-solid-cyan py-3 px-8 text-sm">INICIAR MISSÃO →</button>
+      </div>
+    </div>
+
+    <div class="game-card p-6">
+      <div class="font-game text-xs neon-cyan tracking-widest uppercase mb-4">// CONFIGURAÇÕES</div>
+      <label class="flex items-center gap-3 cursor-pointer">
+        <input type="checkbox" id="profile-lembretes" class="w-5 h-5 accent-cyan-400">
+        <span class="text-sm opacity-70">Receber lembretes e recomendações de saúde por email</span>
+      </label>
+      <button onclick="saveProfileSettings()" class="btn-neon text-xs py-2 px-4 mt-4">SALVAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== LOGIN PESQUISADOR ========== -->
+<div id="screen-researcher-login" class="hidden min-h-screen flex items-center justify-center p-6">
+  <div class="max-w-md w-full">
+    <div class="game-card p-8">
+      <div class="text-center mb-6">
+        <div class="font-game text-xs neon-purple tracking-widest uppercase mb-2">// ACESSO RESTRITO</div>
+        <h2 class="font-game text-2xl font-bold text-white">🔬 PESQUISADOR</h2>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="text-xs font-game neon-purple tracking-widest uppercase block mb-2">EMAIL</label>
+          <input type="email" id="researcher-email" placeholder="pesquisador@instituicao.br" class="game-input w-full">
+        </div>
+        <div>
+          <label class="text-xs font-game neon-purple tracking-widest uppercase block mb-2">SENHA</label>
+          <input type="password" id="researcher-password" placeholder="••••••••" class="game-input w-full" onkeypress="if(event.key==='Enter')researcherLogin()">
+        </div>
+        <div id="login-error-r" class="hidden text-red-400 text-sm font-game text-center">Credenciais inválidas.</div>
+        <button onclick="researcherLogin()" class="btn-neon btn-neon-purple w-full py-3 text-xs">ACESSAR PAINEL</button>
+      </div>
+      <div class="mt-4 game-card-purple p-3 rounded-xl text-xs opacity-50 text-center">
+        Demo: <code>pesquisador@cardio.br</code> / <code>cardio2024</code>
+      </div>
+      <div class="mt-4 text-center">
+        <button onclick="showScreen('screen-home')" class="text-xs opacity-30 hover:opacity-60">← Voltar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== DASHBOARD PESQUISADOR ========== -->
+<div id="screen-dashboard" class="hidden min-h-screen" style="background:var(--bg-dark)">
+  <!-- Header -->
+  <div class="sticky top-0 z-20" style="background:rgba(10,10,26,0.97); border-bottom:1px solid rgba(191,0,255,0.3); backdrop-filter:blur(10px);">
+    <div class="flex items-center gap-3 px-4 py-3">
+      <div class="font-game text-sm neon-purple tracking-widest">🔬 PAINEL DO PESQUISADOR</div>
+      <div class="ml-auto">
+        <button onclick="researcherLogout()" class="btn-neon btn-neon-purple text-xs py-2 px-4">SAIR</button>
+      </div>
+    </div>
+    <div class="flex overflow-x-auto px-2 gap-1">
+      <button onclick="showDashTab('dtab-overview')" class="dtab py-2 px-4 text-xs font-game tracking-widest uppercase tab-active whitespace-nowrap" data-dtab="dtab-overview">📊 VISÃO GERAL</button>
+      <button onclick="showDashTab('dtab-stats')" class="dtab py-2 px-4 text-xs font-game tracking-widest uppercase opacity-40 whitespace-nowrap" data-dtab="dtab-stats">📈 ESTATÍSTICAS</button>
+      <button onclick="showDashTab('dtab-participants')" class="dtab py-2 px-4 text-xs font-game tracking-widest uppercase opacity-40 whitespace-nowrap" data-dtab="dtab-participants">👥 PARTICIPANTES</button>
+      <button onclick="showDashTab('dtab-conversations')" class="dtab py-2 px-4 text-xs font-game tracking-widest uppercase opacity-40 whitespace-nowrap" data-dtab="dtab-conversations">💬 CONVERSAS</button>
+    </div>
+  </div>
+
+  <!-- Tab Overview -->
+  <div id="dtab-overview" class="p-4">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="stat-widget"><div class="text-2xl mb-1">👥</div><div class="font-game text-3xl neon-cyan font-black" id="stat-total">0</div><div class="text-xs opacity-50 font-game mt-1">PARTICIPANTES</div></div>
+      <div class="stat-widget"><div class="text-2xl mb-1">🟢</div><div class="font-game text-3xl font-black" style="color:#00ff88" id="stat-low">0</div><div class="text-xs opacity-50 font-game mt-1">RISCO BAIXO</div></div>
+      <div class="stat-widget"><div class="text-2xl mb-1">🟡</div><div class="font-game text-3xl neon-yellow font-black" id="stat-moderate">0</div><div class="text-xs opacity-50 font-game mt-1">RISCO MODERADO</div></div>
+      <div class="stat-widget"><div class="text-2xl mb-1">🔴</div><div class="font-game text-3xl neon-red font-black" id="stat-high">0</div><div class="text-xs opacity-50 font-game mt-1">RISCO ELEVADO</div></div>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+      <div class="game-card p-5">
+        <div class="font-game text-xs neon-cyan tracking-widest uppercase mb-4">// DISTRIBUIÇÃO DE RISCO</div>
+        <canvas id="chart-risk" height="220"></canvas>
+      </div>
+      <div class="game-card p-5">
+        <div class="font-game text-xs neon-cyan tracking-widest uppercase mb-4">// PONTUAÇÃO MÉDIA POR EIXO</div>
+        <canvas id="chart-axes" height="220"></canvas>
+      </div>
+    </div>
+    <div class="game-card p-5">
+      <div class="font-game text-xs neon-cyan tracking-widest uppercase mb-4">// DISTRIBUIÇÃO DE NÍVEIS</div>
+      <div id="levels-chart" class="space-y-2"></div>
+    </div>
+  </div>
+
+  <!-- Tab Estatísticas -->
+  <div id="dtab-stats" class="hidden p-4">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="stat-widget"><div class="text-lg opacity-50 font-game">XP MÉDIO</div><div class="font-game text-3xl neon-yellow font-black" id="stat-avg-pts">0</div></div>
+      <div class="stat-widget"><div class="text-lg opacity-50 font-game">XP MÁX</div><div class="font-game text-3xl neon-green font-black" id="stat-max-pts">0</div></div>
+      <div class="stat-widget"><div class="text-lg opacity-50 font-game">XP MÍN</div><div class="font-game text-3xl neon-red font-black" id="stat-min-pts">0</div></div>
+      <div class="stat-widget"><div class="text-lg opacity-50 font-game">LEMBRETES</div><div class="font-game text-3xl neon-cyan font-black" id="stat-lembretes">0</div></div>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+      <div class="game-card p-5">
+        <div class="font-game text-xs neon-cyan tracking-widest uppercase mb-4">// DISTRIBUIÇÃO POR SEXO</div>
+        <canvas id="chart-sexo" height="220"></canvas>
+      </div>
+      <div class="game-card p-5">
+        <div class="font-game text-xs neon-cyan tracking-widest uppercase mb-4">// DISTRIBUIÇÃO POR FAIXA ETÁRIA</div>
+        <canvas id="chart-age" height="220"></canvas>
+      </div>
+    </div>
+    <div class="game-card p-5 mb-4">
+      <div class="font-game text-xs neon-cyan tracking-widest uppercase mb-4">// EIXO PRINCIPAL DE RISCO (frequência)</div>
+      <div id="chart-main-axis" class="space-y-2"></div>
+    </div>
+    <div class="game-card p-5">
+      <div class="font-game text-xs neon-cyan tracking-widest uppercase mb-4">// HISTOGRAMA DE PONTUAÇÃO</div>
+      <canvas id="chart-hist" height="180"></canvas>
+    </div>
+  </div>
+
+  <!-- Tab Participantes -->
+  <div id="dtab-participants" class="hidden p-4">
+    <div class="flex justify-between items-center mb-4">
+      <div class="font-game text-xs neon-cyan tracking-widest uppercase">// LISTA DE PARTICIPANTES</div>
+      <button onclick="exportCSV()" class="btn-neon btn-neon-green text-xs py-2 px-4">📥 EXPORTAR CSV</button>
+    </div>
+    <div class="game-card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs">
+          <thead style="background:rgba(0,245,255,0.05); border-bottom:1px solid rgba(0,245,255,0.1)">
+            <tr class="font-game text-xxs">
+              <th class="px-4 py-3 text-left neon-cyan tracking-widest">JOGADOR</th>
+              <th class="px-4 py-3 text-left opacity-50">DADOS</th>
+              <th class="px-4 py-3 text-left opacity-50">LOCAL</th>
+              <th class="px-4 py-3 text-center neon-yellow">XP</th>
+              <th class="px-4 py-3 text-center opacity-50">NÍVEL</th>
+              <th class="px-4 py-3 text-center opacity-50">RISCO</th>
+              <th class="px-4 py-3 text-left opacity-50">EIXO CRÍTICO</th>
+              <th class="px-4 py-3 text-center opacity-50">AÇÃO</th>
+            </tr>
+          </thead>
+          <tbody id="participants-table" style="font-family:'Inter',sans-serif"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Conversas -->
+  <div id="dtab-conversations" class="hidden p-4">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div class="game-card p-4">
+        <div class="font-game text-xs neon-cyan tracking-widest uppercase mb-3">// CONVERSAS</div>
+        <div id="conversations-list" class="space-y-2 max-h-96 overflow-y-auto"></div>
+      </div>
+      <div class="lg:col-span-2 game-card p-4">
+        <div class="font-game text-xs neon-cyan tracking-widest uppercase mb-3" id="conv-detail-title">// SELECIONE</div>
+        <div id="conv-detail" class="space-y-3 max-h-[500px] overflow-y-auto">
+          <p class="text-center py-8 opacity-30 font-game text-xs">← SELECT CONVERSATION</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ========== GUIA POR EIXO ========== -->
+<div id="screen-guide" class="hidden min-h-screen p-4 pb-16" style="background:var(--bg-dark)">
+  <div class="max-w-2xl mx-auto">
+    <div class="flex items-center gap-3 mb-6 pt-4">
+      <button onclick="goBackFromGuide()" class="btn-neon text-xs py-2 px-4">← VOLTAR</button>
+      <div class="font-game text-sm neon-cyan tracking-widest uppercase" id="guide-title">// GUIA</div>
+    </div>
+    <div id="guide-content"></div>
+    <!-- Aviso clínico -->
+    <div class="game-card p-4 mt-6 mb-8" style="border-color:rgba(255,230,0,0.4)">
+      <div class="flex gap-2 items-start">
+        <span class="text-xl">⚠️</span>
+        <p class="text-xs opacity-70 leading-relaxed">
+          <strong class="neon-yellow">AVISO IMPORTANTE:</strong> As informações deste guia têm caráter educativo e preventivo. 
+          Este teste <strong>não substitui consulta médica, diagnóstico clínico ou tratamento especializado</strong>. 
+          Serve como parâmetro para identificar possibilidades de risco cardiovascular com base em hábitos de vida. 
+          Sempre consulte um médico antes de tomar decisões sobre sua saúde.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MEUS RESULTADOS ========== -->
+<div id="screen-my-results" class="hidden min-h-screen p-4 pb-16" style="background:var(--bg-dark)">
+  <div class="max-w-2xl mx-auto">
+    <div class="flex items-center gap-3 mb-6 pt-4">
+      <button onclick="showScreen('screen-profile')" class="btn-neon text-xs py-2 px-4">← VOLTAR</button>
+      <div class="font-game text-sm neon-cyan tracking-widest uppercase">// MEUS RESULTADOS</div>
+    </div>
+
+    <!-- Card principal de resultado -->
+    <div id="my-result-hero" class="game-card p-6 text-center mb-5 relative overflow-hidden">
+      <div class="absolute inset-0 opacity-5" id="my-result-bg" style="background:linear-gradient(135deg,#00f5ff,#bf00ff)"></div>
+      <div class="relative z-10">
+        <div class="font-game text-xs opacity-40 uppercase tracking-widest mb-2">ÚLTIMA AVALIAÇÃO</div>
+        <div class="text-4xl mb-2" id="my-result-icon">⚡</div>
+        <div class="font-game text-2xl font-black text-white mb-1" id="my-result-nivel">—</div>
+        <div class="font-game text-lg mb-3" id="my-result-risco">Risco —</div>
+        <div class="inline-flex items-center gap-3 rounded-xl px-6 py-3 mb-3" style="background:rgba(255,230,0,0.1);border:1px solid rgba(255,230,0,0.3)">
+          <span class="font-game text-xs opacity-50 uppercase">XP TOTAL</span>
+          <span class="font-game text-3xl neon-yellow font-black" id="my-result-pts">0</span>
+          <span class="font-game text-xs opacity-50">/ 1000</span>
+        </div>
+        <!-- Escala de níveis -->
+        <div id="my-result-scale" class="grid grid-cols-3 gap-1 text-center mt-2"></div>
+        <!-- Faltam XP -->
+        <div class="font-game text-xs neon-cyan mt-3" id="my-result-faltam"></div>
+      </div>
+    </div>
+
+    <!-- Aviso clínico destacado -->
+    <div class="rounded-xl p-4 mb-5" style="background:rgba(255,230,0,0.08);border:2px solid rgba(255,230,0,0.4)">
+      <div class="flex gap-2 items-start">
+        <span class="text-xl flex-shrink-0">⚠️</span>
+        <div>
+          <div class="font-game text-xs neon-yellow tracking-widest uppercase mb-1">AVISO CLÍNICO IMPORTANTE</div>
+          <p class="text-xs opacity-70 leading-relaxed">Esta avaliação tem caráter <strong>educativo e preventivo</strong>, baseada em hábitos de vida autorrelatados. <strong>Não substitui consulta médica, diagnóstico clínico ou tratamento especializado.</strong> Os resultados servem como parâmetro para identificar possibilidades de risco cardiovascular. Sempre consulte um médico ou cardiologista para avaliação completa da sua saúde.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scores por eixo com links de guia -->
+    <div class="game-card p-5 mb-5">
+      <div class="font-game text-xs neon-cyan tracking-widest uppercase mb-4">// SCORES POR EIXO</div>
+      <div id="my-result-axes" class="space-y-4"></div>
+    </div>
+
+    <!-- Medalhas -->
+    <div class="game-card p-5 mb-5">
+      <div class="font-game text-xs neon-cyan tracking-widest uppercase mb-4">// MEDALHAS CONQUISTADAS</div>
+      <div id="my-result-medals" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+    </div>
+
+    <!-- Data da avaliação -->
+    <div class="text-center text-xs opacity-30 font-game mb-4" id="my-result-date"></div>
+
+    <!-- Refazer avaliação -->
+    <div class="text-center mb-8">
+      <button onclick="goToConsent()" class="btn-neon text-xs py-3 px-8">🔄 REFAZER AVALIAÇÃO</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<!-- MODAL PARTICIPANTE -->
+<div id="modal-participant" class="hidden fixed inset-0 flex items-center justify-center p-4 z-50" style="background:rgba(0,0,0,0.85); backdrop-filter:blur(4px)">
+  <div class="game-card max-w-lg w-full max-h-screen overflow-y-auto p-6">
+    <div class="flex justify-between items-start mb-4">
+      <div class="font-game text-sm neon-cyan" id="modal-name">PARTICIPANTE</div>
+      <button onclick="closeModal()" class="opacity-40 hover:opacity-100 text-xl">✕</button>
+    </div>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// STARS BACKGROUND
+// ============================================================
+(function() {
+  const c = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*100+'%';
+    s.style.setProperty('--dur', (2+Math.random()*4)+'s');
+    s.style.animationDelay = (Math.random()*4)+'s';
+    c.appendChild(s);
+  }
+})();
+
+// ============================================================
+// STATE
+// ============================================================
+let ST = {
+  screen: 'home',
+  user: null,
+  participanteId: null,
+  points: 0,
+  answers: {},
+  chatStep: 0,
+  messages: [],
+  resultado: null,
+  participants: [],
+  conversations: [],
+  prevScreen: null,
+};
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showScreen(id) {
+  ST.prevScreen = ST.screen;
+  document.querySelectorAll('[id^="screen-"]').forEach(s => s.classList.add('hidden'));
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('hidden');
+  ST.screen = id;
+  window.scrollTo(0,0);
+}
+
+function goBack() {
+  if (ST.prevScreen) {
+    const target = ST.prevScreen.startsWith('screen-') ? ST.prevScreen : 'screen-' + ST.prevScreen;
+    showScreen(target);
+  } else {
+    showScreen('screen-home');
+  }
+}
+
+function showResultTab(tabId) {
+  ['tab-scores','tab-medals','tab-recs'].forEach(t => {
+    const el = document.getElementById(t);
+    el.classList.add('hidden');
+  });
+  document.querySelectorAll('.result-tab').forEach(b => {
+    b.classList.remove('tab-active');
+    b.classList.add('opacity-40');
+  });
+  document.getElementById(tabId).classList.remove('hidden');
+  document.querySelector(`[data-rtab="${tabId}"]`).classList.add('tab-active');
+  document.querySelector(`[data-rtab="${tabId}"]`).classList.remove('opacity-40');
+}
+
+function showDashTab(tabId) {
+  ['dtab-overview','dtab-stats','dtab-participants','dtab-conversations'].forEach(t => {
+    document.getElementById(t).classList.add('hidden');
+  });
+  document.querySelectorAll('.dtab').forEach(b => {
+    b.classList.remove('tab-active');
+    b.classList.add('opacity-40');
+  });
+  document.getElementById(tabId).classList.remove('hidden');
+  document.querySelector(`[data-dtab="${tabId}"]`).classList.add('tab-active');
+  document.querySelector(`[data-dtab="${tabId}"]`).classList.remove('opacity-40');
+}
+
+// ============================================================
+// AUTH (simulado com localStorage + entities)
+// ============================================================
+const USERS_KEY = 'cardioJovem_users';
+const SESSION_KEY = 'cardioJovem_session';
+
+function getUsers() {
+  try { return JSON.parse(localStorage.getItem(USERS_KEY) || '[]'); } catch { return []; }
+}
+function saveUsers(u) { localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+function getSession() {
+  try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch { return null; }
+}
+function saveSession(u) { localStorage.setItem(SESSION_KEY, JSON.stringify(u)); }
+function clearSession() { localStorage.removeItem(SESSION_KEY); }
+
+function validarEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+}
+
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const pass = document.getElementById('login-password').value;
+  if (!email || !pass) { showLoginError('Preencha todos os campos.'); return; }
+  if (!validarEmail(email)) { showLoginError('Email inválido. Use o formato: nome@dominio.com'); return; }
+  const users = getUsers();
+  const user = users.find(u => u.email === email && u.password === pass);
+  if (!user) { showLoginError('Email ou senha incorretos.'); return; }
+  ST.user = user;
+  saveSession(user);
+  showScreen('screen-consent');
+}
+
+function doRegister() {
+  const nome = document.getElementById('reg-nome').value.trim();
+  const email = document.getElementById('reg-email').value.trim().toLowerCase();
+  const pass = document.getElementById('reg-password').value;
+  const lembretes = document.getElementById('reg-lembretes').checked;
+  if (!nome || !email || !pass) { showRegError('Preencha todos os campos.'); return; }
+  if (!validarEmail(email)) { showRegError('Email inválido. Use o formato: nome@dominio.com'); return; }
+  if (pass.length < 6) { showRegError('Senha: mínimo 6 caracteres.'); return; }
+  const users = getUsers();
+  if (users.find(u => u.email === email)) { showRegError('Email já cadastrado.'); return; }
+  const user = { id: Date.now().toString(), nome, email, password: pass, lembretes, pontos: 0, nivel: 'Iniciante', avaliacao: null };
+  users.push(user);
+  saveUsers(users);
+  ST.user = user;
+  saveSession(user);
+  showScreen('screen-consent');
+}
+
+function showLoginError(msg) {
+  const el = document.getElementById('login-error');
+  el.textContent = msg; el.classList.remove('hidden');
+}
+function showRegError(msg) {
+  const el = document.getElementById('register-error');
+  el.textContent = msg; el.classList.remove('hidden');
+}
+
+
+
+// ============================================================
+// HOME SCREEN — carrega conteúdo dinâmico
+// ============================================================
+function loadHomeScreen() {
+  const loggedIn = !!ST.user;
+  const resultado = ST.resultado || ST.user?.avaliacao || null;
+
+  // Nav
+  document.getElementById('nav-logged-in').classList.toggle('hidden', !loggedIn);
+  document.getElementById('nav-logged-out').classList.toggle('hidden', loggedIn);
+
+  // Hero
+  document.getElementById('hero-guest').classList.toggle('hidden', loggedIn);
+  document.getElementById('hero-user').classList.toggle('hidden', !loggedIn);
+  document.getElementById('cta-guest').classList.toggle('hidden', loggedIn);
+  document.getElementById('cta-user').classList.toggle('hidden', !loggedIn);
+
+  if (!loggedIn) return;
+
+  // Preencher dados do usuário
+  const nivelIcons = {Lendário:'👑',Épico:'💜',Raro:'💎',Incomum:'⚡',Comum:'🌟',Iniciante:'🌱'};
+  const nivelColors = {Lendário:'#ffd700',Épico:'#bf00ff',Raro:'#00aaff',Incomum:'#00ff88',Comum:'#888',Iniciante:'#888'};
+  const riscoColors = {Baixo:'#00ff88',Moderado:'#ffe600',Elevado:'#ff003c'};
+  const nome = ST.user.nome || 'Jogador';
+  const nivel = resultado?.nivel || ST.user.nivel || 'Iniciante';
+  const xp = resultado?.pontosTotais || ST.user.pontos || 0;
+  const classificacao = resultado?.classificacao || '—';
+
+  document.getElementById('home-user-name').textContent = nome;
+  document.getElementById('home-nivel-icon').textContent = nivelIcons[nivel] || '🌱';
+  document.getElementById('home-nivel-label').textContent = 'NÍVEL: ' + nivel.toUpperCase();
+  document.getElementById('home-nivel-label').style.color = nivelColors[nivel] || '#888';
+
+  const riscoEl = document.getElementById('home-risco-label');
+  riscoEl.textContent = classificacao !== '—' ? 'RISCO: ' + classificacao.toUpperCase() : 'SEM AVALIAÇÃO';
+  riscoEl.style.color = riscoColors[classificacao] || '#888';
+
+  document.getElementById('home-xp-label').textContent = xp + ' / 1000 XP';
+  const pct = Math.min(Math.round(xp / 10), 100);
+  document.getElementById('home-xp-bar').style.width = pct + '%';
+  document.getElementById('home-xp-pct').textContent = pct + '%';
+
+  // Mini scores preview
+  if (resultado?.scores) {
+    document.getElementById('home-scores-preview').classList.remove('hidden');
+    const maxMap = {atividade:200,alimentacao:180,saudeMental:160,imc:180,alcool:80,tabagismo:130,historicoFamiliar:70};
+    const labels = {atividade:'⚡ Atividade',alimentacao:'🍔 Alimentação',saudeMental:'🧠 Mental & Sono',imc:'⚖️ Composição',alcool:'🍺 Álcool',tabagismo:'🚬 Tabagismo',historicoFamiliar:'🧬 Histórico'};
+    const sorted = Object.entries(resultado.scores).sort((a,b) => (a[1]/maxMap[a[0]])-(b[1]/maxMap[b[0]]));
+    document.getElementById('home-scores-bars').innerHTML = sorted.map(([k,v]) => {
+      const max = maxMap[k] || 100;
+      const p = Math.round(v/max*100);
+      const color = p>=70?'#00ff88':p>=45?'#ffe600':'#ff003c';
+      return `<div class="flex items-center gap-2">
+        <div class="text-xs opacity-60 w-28 flex-shrink-0">${labels[k]||k}</div>
+        <div class="flex-1 progress-neon h-2"><div class="h-2 transition-all rounded" style="width:${p}%;background:${color}"></div></div>
+        <div class="text-xs font-game font-bold flex-shrink-0" style="color:${color};width:36px;text-align:right">${p}%</div>
+      </div>`;
+    }).join('');
+    if (ST.user.avaliacaoDate) {
+      document.getElementById('home-eval-date').textContent = 'Avaliado em: ' + new Date(ST.user.avaliacaoDate).toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    }
+  }
+
+  // Top recomendação urgente
+  if (resultado?.scores && resultado?.eixoMaiorRisco) {
+    const recLabels = {
+      atividade:{icon:'🏃',cor:'#00f5ff',titulo:'Ative seu corpo!',desc:'Atividade física é o eixo com maior impacto no seu resultado. Tente 30 min de exercício hoje.'},
+      alimentacao:{icon:'🥗',cor:'#00ff88',titulo:'Repense sua alimentação',desc:'Sua alimentação precisa de atenção. Comece reduzindo ultraprocessados esta semana.'},
+      saudeMental:{icon:'🧘',cor:'#bf00ff',titulo:'Cuide do seu sono e estresse',desc:'Sono e saúde mental impactam diretamente o coração. Priorize 7-8h de sono hoje.'},
+      imc:{icon:'⚖️',cor:'#ffe600',titulo:'Composição corporal em foco',desc:'Seu IMC ou gordura abdominal merecem atenção. Combine exercício e alimentação.'},
+      alcool:{icon:'🍹',cor:'#ffe600',titulo:'Reduza o álcool',desc:'O álcool é fator de risco cardiovascular em qualquer dose (OMS, 2023). Menos é mais.'},
+      tabagismo:{icon:'🚭',cor:'#ff003c',titulo:'Liberte-se da nicotina',desc:'Tabagismo é o principal fator de risco cardiovascular modificável. Cada dia sem fumar importa.'},
+      historicoFamiliar:{icon:'🧬',cor:'#00aaff',titulo:'Atenção ao histórico familiar',desc:'Com histórico familiar de risco, faça check-up anual e controle os outros eixos.'},
+    };
+    const eixo = resultado.eixoMaiorRisco;
+    const rec = recLabels[eixo];
+    if (rec) {
+      const pct = Math.round((resultado.scores[eixo]||0) / {atividade:200,alimentacao:180,saudeMental:160,imc:180,alcool:80,tabagismo:130,historicoFamiliar:70}[eixo] * 100);
+      if (pct < 70) {
+        document.getElementById('home-top-rec').classList.remove('hidden');
+        document.getElementById('home-top-rec').innerHTML = `
+          <div class="game-card p-4 flex gap-3 items-start" style="border-color:${rec.cor}20;background:${rec.cor}08">
+            <span class="text-2xl flex-shrink-0">${rec.icon}</span>
+            <div class="flex-1">
+              <div class="font-game text-xs tracking-widest mb-1" style="color:${rec.cor}">// MISSÃO PRIORITÁRIA</div>
+              <div class="font-semibold text-white text-sm mb-1">${rec.titulo}</div>
+              <p class="text-xs opacity-60">${rec.desc}</p>
+            </div>
+            <button onclick="showGuia('${eixo}')" class="btn-neon text-xs py-1 px-3 flex-shrink-0" style="border-color:${rec.cor};color:${rec.cor}">GUIA ↗</button>
+          </div>`;
+      }
+    }
+  }
+}
+
+function homeShowGuia() {
+  // Vai para o guia do eixo de maior risco, ou abre o guia geral
+  if (ST.resultado?.eixoMaiorRisco) {
+    showGuia(ST.resultado.eixoMaiorRisco);
+  } else {
+    showGuia('atividade');
+  }
+}
+
+function voltarDoProfile() {
+  // Se veio do resultado, volta para resultado (que ainda está no DOM)
+  const prev = ST.prevScreen || '';
+  if (prev === 'screen-result' || prev === 'screen-my-results') {
+    showScreen(prev);
+  } else if (ST.resultado || ST.user?.avaliacao) {
+    // Tem resultado salvo — pode voltar ao resultado ou home
+    showScreen('screen-home');
+  } else {
+    showScreen('screen-home');
+  }
+}
+
+function doLogout() {
+  clearSession();
+  ST.user = null;
+  showScreen('screen-home');
+}
+
+function goToConsent() { showScreen('screen-consent'); }
+
+// Check session on load
+window.addEventListener('load', () => {
+  const sess = getSession();
+  if (sess) {
+    const users = getUsers();
+    const fresh = users.find(u => u.id === sess.id);
+    const user = fresh || sess;
+    ST.user = user;
+    if (user.avaliacao) ST.resultado = user.avaliacao;
+  }
+  // Sempre mostrar home
+  showScreen('screen-home');
+});
+
+// ============================================================
+// CONSENTIMENTO
+// ============================================================
+document.getElementById('consent-check').addEventListener('change', function() {
+  const btn = document.getElementById('btn-consent');
+  if (this.checked) {
+    btn.disabled = false;
+    btn.classList.remove('opacity-40','cursor-not-allowed');
+  } else {
+    btn.disabled = true;
+    btn.classList.add('opacity-40','cursor-not-allowed');
+  }
+});
+
+// ============================================================
+// CHAT FLOW
+// ============================================================
+const chatFlow = [
+  // ── INICIALIZAÇÃO (sem XP) ──────────────────────────────
+  { id:'idade', section:'👾 INICIALIZAÇÃO',
+    q: function(){ return `SISTEMA INICIADO.\n\nOlá, ${ST.user?.nome||'Jogador'}! 👋 Sou o CardioBot 🤖\n\nVamos mapear seu perfil cardiovascular em ~5 minutos.\n\nQual é a sua idade? (entre 15 e 29 anos)`; },
+    type:'number', min:15, max:29, pts:0 },
+
+  { id:'sexo', section:'👾 INICIALIZAÇÃO',
+    q:'Com qual sexo você se identifica?', type:'choice',
+    options:['Masculino','Feminino','Transgênero Masculino','Transgênero Feminino','Não-binário','Prefiro não informar'],
+    values:['Masculino','Feminino','Transgênero Masculino','Transgênero Feminino','Não-binário','Prefiro não informar'], pts:0 },
+
+  { id:'cidade', section:'👾 INICIALIZAÇÃO',
+    q:'De qual cidade você é?', type:'text', pts:0 },
+
+  { id:'estado', section:'👾 INICIALIZAÇÃO',
+    q:'E o estado? (sigla, ex: SP)', type:'text', pts:0 },
+
+  // ── EIXO 1 — ATIVIDADE FÍSICA & TELAS (200 XP) ──────────
+  { id:'diasExercicio', section:'⚡ EIXO 1 — ATIVIDADE FÍSICA',
+    q:'Vamos começar! 💪\n\nQuantos dias por semana você pratica exercício físico moderado ou intenso?',
+    type:'choice',
+    options:['Nenhum dia','1 a 2 dias','3 a 4 dias','5 dias ou mais 🟢'],
+    values:['0','1','3','5'], pts:0 },
+
+  { id:'horasSentado', section:'⚡ EIXO 1 — ATIVIDADE FÍSICA',
+    q:'Quantas horas por dia você passa sentado? (trabalho, estudo, transporte...)',
+    type:'choice',
+    options:['Menos de 4h 🟢','4 a 6h','6 a 8h','Mais de 8h 🔴'],
+    values:['menos4','4a6','6a8','mais8'], pts:0 },
+
+  { id:'horasTela', section:'⚡ EIXO 1 — ATIVIDADE FÍSICA',
+    q:'Horas de tela por dia por LAZER (fora trabalho/estudo)?\n(celular, Netflix, jogos, YouTube...)',
+    type:'choice',
+    options:['Menos de 2h 🟢','2 a 4h','4 a 6h','6h ou mais 🔴'],
+    values:['menos2','2a4','4a6','mais6'], pts:0 },
+
+  { id:'redesSociais', section:'⚡ EIXO 1 — ATIVIDADE FÍSICA',
+    q:'Com que frequência você usa redes sociais e streaming (TikTok, Instagram, YouTube, Netflix...)?',
+    type:'choice',
+    options:['Quase nunca 🟢','Às vezes','Frequentemente','Quase sempre 🔴'],
+    values:['nunca','asvez','freq','sempre'], pts:0 },
+
+  { id:'transporteAtivo', section:'⚡ EIXO 1 — ATIVIDADE FÍSICA',
+    q:'Você usa transporte ativo no dia a dia? (caminhada, bicicleta para ir a lugares)',
+    type:'choice',
+    options:['Frequentemente 🟢','Às vezes','Raramente','Nunca 🔴'],
+    values:['freq','asvez','raro','nunca'], pts:0 },
+
+  // ── EIXO 2 — ALIMENTAÇÃO (180 XP) ──────────────────────
+  { id:'ultraprocessados', section:'🍔 EIXO 2 — ALIMENTAÇÃO',
+    q:'Agora sobre alimentação! 🥗\n\nQuantas vezes por semana você consome ultraprocessados?\n(fast food, salgadinhos, refrigerantes, biscoitos industriais, embutidos...)',
+    type:'choice',
+    options:['Nunca / raramente 🟢','1 a 2 vezes','3 a 4 vezes','5 vezes ou mais 🔴'],
+    values:['nunca','1a2','3a4','5mais'], pts:0 },
+
+  { id:'frutasVegetais', section:'🍔 EIXO 2 — ALIMENTAÇÃO',
+    q:'Quantas porções de frutas e/ou vegetais você come por dia?\n(1 porção = 1 fruta média, ½ xícara de legumes)',
+    type:'choice',
+    options:['5 ou mais 🟢','3 a 4','1 a 2','Nenhuma 🔴'],
+    values:['5mais','3a4','1a2','zero'], pts:0 },
+
+  { id:'pularRefeicoes', section:'🍔 EIXO 2 — ALIMENTAÇÃO',
+    q:'Com que frequência você pula refeições ou come em horários muito irregulares?',
+    type:'choice',
+    options:['Nunca 🟢','Às vezes','Frequentemente','Quase sempre 🔴'],
+    values:['nunca','asvez','freq','sempre'], pts:0 },
+
+  { id:'refrigerante', section:'🍔 EIXO 2 — ALIMENTAÇÃO',
+    q:'Com que frequência você bebe refrigerantes ou bebidas açucaradas?',
+    type:'choice',
+    options:['Nunca 🟢','1 a 2 vezes/semana','3 a 4 vezes/semana','Diariamente 🔴'],
+    values:['nunca','1a2','3a4','diario'], pts:0 },
+
+  { id:'comerTela', section:'🍔 EIXO 2 — ALIMENTAÇÃO',
+    q:'Com que frequência você come vendo tela? (TV, celular, computador...)\n\n📊 Distração alimentar aumenta a ingestão calórica em ~22%!',
+    type:'choice',
+    options:['Nunca 🟢','Às vezes','Frequentemente','Sempre 🔴'],
+    values:['nunca','asvez','freq','sempre'], pts:0 },
+
+  // ── EIXO 3 — SAÚDE MENTAL & SONO (160 XP) ──────────────
+  { id:'estresse', section:'🧠 EIXO 3 — SAÚDE MENTAL',
+    q:'Vamos falar sobre saúde mental e sono. 🧠\n\nComo você avalia seu nível de estresse no dia a dia?',
+    type:'choice',
+    options:['Baixo 🟢','Moderado','Alto','Muito alto 🔴'],
+    values:['baixo','moderado','alto','muitoalto'], pts:0 },
+
+  { id:'sintomasEmocionais', section:'🧠 EIXO 3 — SAÚDE MENTAL',
+    q:'Com que frequência você sente sintomas emocionais como tristeza, ansiedade, angústia ou sobrecarga?',
+    type:'choice',
+    options:['Nunca 🟢','Às vezes','Frequentemente','Quase sempre 🔴'],
+    values:['nunca','asvez','freq','sempre'], pts:0 },
+
+  { id:'horasSono', section:'🧠 EIXO 3 — SAÚDE MENTAL',
+    q:'Quantas horas você dorme por noite em média?\n\n💤 AHA 2022: sono adequado é o 8º fator de saúde cardiovascular!',
+    type:'choice',
+    options:['7 a 8 horas 🟢','Mais de 8 horas','5 a 6 horas','Menos de 5 horas 🔴'],
+    values:['7a8','mais8','5a6','menos5'], pts:0 },
+
+  { id:'telaNoite', section:'🧠 EIXO 3 — SAÚDE MENTAL',
+    q:'Com que frequência você usa celular/telas depois das 23h?\n\n⚠️ A luz azul suprime a melatonina e prejudica o coração.',
+    type:'choice',
+    options:['Nunca 🟢','Às vezes','Frequentemente','Sempre 🔴'],
+    values:['nunca','asvez','freq','sempre'], pts:0 },
+
+  { id:'acordaCansado', section:'🧠 EIXO 3 — SAÚDE MENTAL',
+    q:'Com que frequência você acorda cansado, sem se sentir descansado?',
+    type:'choice',
+    options:['Nunca 🟢','Às vezes','Frequentemente','Sempre 🔴'],
+    values:['nunca','asvez','freq','sempre'], pts:0 },
+
+  // ── EIXO 4 — COMPOSIÇÃO CORPORAL (180 XP) ────────────────
+  { id:'peso', section:'⚖️ EIXO 4 — COMPOSIÇÃO CORPORAL',
+    q:'Agora sobre composição corporal! ⚖️\n\nQual é o seu peso em kg? (apenas números, ex: 70)',
+    type:'number', min:30, max:200, pts:0 },
+
+  { id:'altura', section:'⚖️ EIXO 4 — COMPOSIÇÃO CORPORAL',
+    q:'Qual é a sua altura em metros?\n(use o formato: 1.72 ou 1,72)',
+    type:'altura', min:1.0, max:2.5, pts:0 },
+
+  { id:'gorduraAbdominal', section:'⚖️ EIXO 4 — COMPOSIÇÃO CORPORAL',
+    q:'Como você avalia sua gordura abdominal?\n(barriga / acúmulo de gordura na região da cintura)',
+    type:'choice',
+    options:['Muito baixa 🟢','Normal','Moderada','Elevada 🔴'],
+    values:['muitobaixa','normal','moderada','elevada'], pts:0 },
+
+  // ── EIXO 5 — ÁLCOOL (80 XP) ─────────────────────────────
+  { id:'frequenciaAlcool', section:'🍺 EIXO 5 — ÁLCOOL',
+    q:'Algumas perguntas sobre álcool. 🍺\n\nCom que frequência você bebe bebidas alcoólicas?',
+    type:'choice',
+    options:['Nunca 🟢','Mensalmente','Semanalmente','2 ou mais vezes/semana 🔴'],
+    values:['nunca','mensal','semanal','2mais'], pts:0 },
+
+  { id:'bingePorMes', section:'🍺 EIXO 5 — ÁLCOOL',
+    q:'Quantas vezes por mês você pratica binge drinking?\n(beber 4 ou mais doses em uma única ocasião)',
+    type:'choice',
+    options:['Nunca 🟢','1 vez','2 a 3 vezes','4 ou mais vezes 🔴'],
+    values:['nunca','1','2a3','4mais'], pts:0 },
+
+  { id:'dosesAlcool', section:'🍺 EIXO 5 — ÁLCOOL',
+    q:'Quando você bebe, quantas doses costuma tomar por ocasião?',
+    type:'choice',
+    options:['1 dose 🟢','2 a 3 doses','4 a 5 doses','6 ou mais doses 🔴'],
+    values:['1','2a3','4a5','6mais'], pts:0 },
+
+  // ── EIXO 6 — TABAGISMO & NICOTINA (130 XP) ──────────────
+  { id:'cigarro', section:'🚬 EIXO 6 — TABAGISMO',
+    q:'Agora sobre tabagismo. 🚬\n\nVocê fuma cigarro convencional?',
+    type:'choice',
+    options:['Nunca fumei 🟢','Ex-fumante','Fumo ocasionalmente','Fumo diariamente 🔴'],
+    values:['nunca','ex','ocasional','diario'], pts:0 },
+
+  { id:'vape', section:'🚬 EIXO 6 — TABAGISMO',
+    q:'Você usa vape ou cigarro eletrônico?',
+    type:'choice',
+    options:['Nunca usei 🟢','Ex-usuário','Uso ocasionalmente','Uso diariamente 🔴'],
+    values:['nunca','ex','ocasional','diario'], pts:0 },
+
+  { id:'narguile', section:'🚬 EIXO 6 — TABAGISMO',
+    q:'E narguilé?',
+    type:'choice',
+    options:['Nunca 🟢','Raramente','Mensalmente','Frequentemente (semanal+) 🔴'],
+    values:['nunca','raro','mensal','freq'], pts:0 },
+
+  { id:'fumacaPassiva', section:'🚬 EIXO 6 — TABAGISMO',
+    q:'Você é exposto à fumaça de cigarro de outras pessoas?\n(em casa, trabalho, festas, espaços fechados)',
+    type:'choice',
+    options:['Nunca 🟢','Raramente','Frequentemente','Diariamente 🔴'],
+    values:['nunca','raro','freq','diario'], pts:0 },
+
+  // ── EIXO 7 — HISTÓRICO FAMILIAR (70 XP) ─────────────────
+  { id:'doencaCardioFamiliar', section:'🧬 EIXO 7 — HISTÓRICO FAMILIAR',
+    q:'Quase lá! 🧬\n\nAlgum familiar próximo (pais, avós, irmãos) teve doença cardiovascular precoce?\n(infarto, AVC, antes dos 55 anos homens / 65 anos mulheres)',
+    type:'choice',
+    options:['Não 🟢','Não sei','Sim (1 caso)','Mais de um caso 🔴'],
+    values:['nao','naosei','sim','varios'], pts:0 },
+
+  { id:'obesidadeFamiliar', section:'🧬 EIXO 7 — HISTÓRICO FAMILIAR',
+    q:'Há histórico de obesidade, diabetes tipo 2 ou hipertensão na sua família?',
+    type:'choice',
+    options:['Não 🟢','Não sei','Sim (1 familiar)','Mais de um familiar 🔴'],
+    values:['nao','naosei','sim','varios'], pts:0 },
+];
+
+let chatStep = 0;
+
+function startChat() {
+  if (!ST.user) { showScreen('screen-login'); return; }
+  showScreen('screen-chat');
+  chatStep = 0;
+  ST.answers = {};
+  ST.points = 0;
+  ST.messages = [];
+  // NÃO limpar ST.resultado aqui — só sobrescrevemos quando terminar
+  document.getElementById('chat-messages').innerHTML = '';
+  document.getElementById('points-display').textContent = '0';
+  setTimeout(() => askQ(0), 400);
+}
+
+function askQ(step) {
+  if (step >= chatFlow.length) { finishChat(); return; }
+  const q = chatFlow[step];
+  const pct = Math.round((step / chatFlow.length) * 100);
+  document.getElementById('progress-bar').style.width = pct+'%';
+  document.getElementById('progress-text').textContent = pct+'%';
+  document.getElementById('section-display').textContent = q.section;
+  const text = typeof q.q === 'function' ? q.q() : q.q;
+  showTyping(() => { addBotMsg(text); showInput(step); });
+}
+
+function showTyping(cb) {
+  const el = document.createElement('div');
+  el.id = 'typing-ind';
+  el.className = 'flex gap-3 items-end';
+  el.innerHTML = `<div class="w-8 h-8 rounded-full flex items-center justify-center text-base heartbeat" style="background:linear-gradient(135deg,#00f5ff22,#bf00ff22);border:1px solid rgba(0,245,255,0.4)">🤖</div><div class="bubble-bot px-4 py-3 flex gap-1 items-center"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+  document.getElementById('chat-messages').appendChild(el);
+  scrollC();
+  setTimeout(() => { el.remove(); cb(); }, 700 + Math.random()*400);
+}
+
+function addBotMsg(text) {
+  const el = document.createElement('div');
+  el.className = 'flex gap-3 items-end';
+  el.innerHTML = `<div class="w-8 h-8 rounded-full flex items-center justify-center text-base flex-shrink-0" style="background:linear-gradient(135deg,#00f5ff22,#bf00ff22);border:1px solid rgba(0,245,255,0.4)">🤖</div><div class="bubble-bot px-4 py-3 text-sm max-w-sm lg:max-w-md whitespace-pre-wrap" style="color:#c0d8ff">${text}</div>`;
+  document.getElementById('chat-messages').appendChild(el);
+  ST.messages.push({ role:'bot', content:text, timestamp:new Date().toISOString() });
+  scrollC();
+}
+
+function addUserMsg(text) {
+  const el = document.createElement('div');
+  el.className = 'flex gap-3 items-end justify-end';
+  el.innerHTML = `<div class="bubble-user px-4 py-3 text-sm max-w-xs lg:max-w-md" style="color:#a0c8ff">${text}</div><div class="w-8 h-8 rounded-full flex items-center justify-center text-base flex-shrink-0" style="background:rgba(0,136,255,0.15);border:1px solid rgba(0,136,255,0.4)">👤</div>`;
+  document.getElementById('chat-messages').appendChild(el);
+  ST.messages.push({ role:'user', content:text, timestamp:new Date().toISOString() });
+  scrollC();
+}
+
+function showInput(step) {
+  const q = chatFlow[step];
+  const qr = document.getElementById('quick-replies');
+  const inp = document.getElementById('chat-input');
+  qr.innerHTML = '';
+  inp.value = '';
+
+  if (q.type === 'choice') {
+    inp.style.display = 'none';
+    document.querySelector('button[onclick="sendMessage()"]').style.display = 'none';
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.textContent = opt;
+      btn.onclick = () => handleAns(step, q.values ? q.values[i] : opt, opt);
+      qr.appendChild(btn);
+    });
+  } else if (q.type === 'yesno') {
+    inp.style.display = 'none';
+    document.querySelector('button[onclick="sendMessage()"]').style.display = 'none';
+    [['SIM ✓', true, '✅ Sim'], ['NÃO ✗', false, '❌ Não']].forEach(([label, val, display]) => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.textContent = label;
+      btn.onclick = () => handleAns(step, val, display);
+      qr.appendChild(btn);
+    });
+  } else {
+    inp.style.display = 'block';
+    document.querySelector('button[onclick="sendMessage()"]').style.display = 'block';
+    if (q.id === 'idade') { inp.placeholder = 'Digite sua idade (ex: 18)'; inp.inputMode='numeric'; }
+    else if (q.type === 'altura') { inp.placeholder = 'Ex: 1.72 ou 1,72'; inp.inputMode='decimal'; }
+    else if (q.id === 'peso') { inp.placeholder = 'Ex: 70'; inp.inputMode='numeric'; }
+    else if (q.type === 'number') { inp.placeholder = 'Digite um número...'; inp.inputMode='decimal'; }
+    else { inp.placeholder = 'Digite sua resposta...'; inp.inputMode='text'; }
+    inp.focus();
+  }
+}
+
+function filterChatInput(inp) {
+  const q = chatFlow[chatStep];
+  if (!q) return;
+  if (q.id === 'idade' || q.id === 'peso') {
+    // Só números
+    inp.value = inp.value.replace(/[^0-9]/g, '');
+  } else if (q.type === 'altura') {
+    // Números, ponto e vírgula
+    inp.value = inp.value.replace(/[^0-9.,]/g, '');
+  }
+}
+
+function sendMessage() {
+  const inp = document.getElementById('chat-input');
+  const raw = inp.value.trim();
+  if (!raw) return;
+  const q = chatFlow[chatStep];
+
+  if (q.id === 'idade') {
+    // Apenas inteiros, sem letras
+    if (!/^\d{2}$/.test(raw)) {
+      addBotMsg('⚠️ Por favor, digite apenas sua idade com 2 dígitos. Ex: 18');
+      inp.value = '';
+      return;
+    }
+    const n = parseInt(raw, 10);
+    if (n < 15 || n > 29) {
+      addBotMsg(`⚠️ Esta pesquisa é para jovens de 15 a 29 anos. Sua idade está nessa faixa?`);
+      inp.value = '';
+      return;
+    }
+    handleAns(chatStep, n, raw);
+
+  } else if (q.type === 'altura') {
+    // Aceita x.xx ou x,xx — substitui vírgula por ponto
+    const norm = raw.replace(',', '.');
+    if (!/^\d[.,]\d{2}$/.test(raw)) {
+      addBotMsg('⚠️ Por favor, use o formato correto. Ex: 1.72 ou 1,72');
+      inp.value = '';
+      return;
+    }
+    const n = parseFloat(norm);
+    if (isNaN(n) || n < 1.0 || n > 2.5) {
+      addBotMsg('⚠️ Altura inválida. Insira um valor entre 1.00 e 2.50 metros.');
+      inp.value = '';
+      return;
+    }
+    handleAns(chatStep, n, raw);
+
+  } else if (q.type === 'number') {
+    // Peso: apenas números inteiros ou decimais
+    if (!/^\d{2,3}([.,]\d{1,2})?$/.test(raw)) {
+      addBotMsg(`⚠️ Por favor, insira apenas números. Ex: 70`);
+      inp.value = '';
+      return;
+    }
+    const n = parseFloat(raw.replace(',', '.'));
+    if (isNaN(n) || n < (q.min||0) || n > (q.max||9999)) {
+      addBotMsg(`⚠️ Valor inválido. Deve estar entre ${q.min} e ${q.max}.`);
+      inp.value = '';
+      return;
+    }
+    handleAns(chatStep, n, raw);
+
+  } else {
+    handleAns(chatStep, raw, raw);
+  }
+}
+
+function handleAns(step, value, display) {
+  const q = chatFlow[step];
+  addUserMsg(display);
+  ST.answers[q.id] = value;
+  ST.points += q.pts || 0;
+  document.getElementById('points-display').textContent = ST.points;
+  document.getElementById('chat-input').style.display = 'block';
+  document.querySelector('button[onclick="sendMessage()"]').style.display = 'block';
+  document.getElementById('quick-replies').innerHTML = '';
+  chatStep++;
+  setTimeout(() => askQ(chatStep), 300);
+}
+
+function scrollC() {
+  const c = document.getElementById('chat-messages');
+  setTimeout(() => c.scrollTo({top:c.scrollHeight,behavior:'smooth'}), 100);
+}
+
+// ============================================================
+// FINISH CHAT + CALCULAR
+// ============================================================
+async function finishChat() {
+  document.getElementById('progress-bar').style.width = '100%';
+  document.getElementById('progress-text').textContent = '100%';
+  showTyping(async () => {
+    addBotMsg(`AVALIAÇÃO CONCLUÍDA! 🎉\n\nProcessando seus dados e calculando seu score cardiovascular...\n\n[ CALCULANDO XP... ]`);
+    
+    // Salvar/atualizar participante
+    let participanteId = null;
+    try {
+      const users = getUsers();
+      const ui = users.findIndex(u => u.id === ST.user?.id);
+      if (ui !== -1) {
+        users[ui].cidade = ST.answers.cidade;
+        users[ui].estado = ST.answers.estado;
+        users[ui].idade = ST.answers.idade;
+        users[ui].sexo = ST.answers.sexo;
+        saveUsers(users);
+        saveSession(users[ui]);
+        ST.user = users[ui];
+      }
+    } catch(e) {}
+
+    try {
+      // Tentar salvar no banco
+      const pResp = await fetch('/api/entities/Participante', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          nome: ST.user?.nome || 'Participante',
+          idade: parseInt(ST.answers.idade),
+          sexo: ST.answers.sexo,
+          email: ST.user?.email || '',
+          cidade: ST.answers.cidade,
+          estado: ST.answers.estado,
+          receber_lembretes: ST.user?.lembretes || false,
+          consentimento: true,
+          avaliacao_completa: false,
+        }),
+      });
+      if (pResp.ok) { const d = await pResp.json(); participanteId = d.id; }
+    } catch(e) {}
+
+    ST.participanteId = participanteId;
+
+    try {
+      const resp = await fetch('/functions/calcularRisco', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ respostas: ST.answers, participanteId }),
+      });
+      let resultado;
+      if (resp.ok) resultado = await resp.json();
+      else resultado = calcularLocal(ST.answers);
+      
+      // Salvar resultado na conversa
+      try {
+        await fetch('/api/entities/Conversa', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({
+            participante_id: participanteId || ST.user?.id,
+            mensagens: ST.messages,
+            status: 'concluida',
+            pontos_gamificacao: resultado.pontosTotais,
+            badge: resultado.nivel,
+          }),
+        });
+      } catch(e) {}
+
+      // Persistir resultado e enviar email
+      persistirResultado(resultado);
+      enviarEmailRecomendacoes(resultado);
+      setTimeout(() => mostrarResultado(resultado), 1500);
+    } catch(err) {
+      const resultado = calcularLocal(ST.answers);
+      persistirResultado(resultado);
+      enviarEmailRecomendacoes(resultado);
+      setTimeout(() => mostrarResultado(resultado), 1500);
+    }
+  });
+}
+
+// ============================================================
+// CÁLCULO LOCAL (fallback)
+// ============================================================
+function calcularLocal(r) {
+  // ── EIXO 1: ATIVIDADE FÍSICA & TELAS (máx 200 XP) ────────
+  const ex = r.diasExercicio;
+  const atv_ex = ex==='5'||ex===5 ? 70 : ex==='3'||ex===3 ? 50 : ex==='1'||ex===1 ? 25 : 0;
+
+  const sent = r.horasSentado;
+  const atv_sent = sent==='menos4' ? 40 : sent==='4a6' ? 30 : sent==='6a8' ? 15 : 0;
+
+  const tela = r.horasTela;
+  const atv_tela = tela==='menos2' ? 35 : tela==='2a4' ? 22 : tela==='4a6' ? 10 : 0;
+
+  const rs = r.redesSociais;
+  const atv_rs = rs==='nunca' ? 25 : rs==='asvez' ? 18 : rs==='freq' ? 8 : 0;
+
+  const tp = r.transporteAtivo;
+  const atv_tp = tp==='freq' ? 30 : tp==='asvez' ? 20 : tp==='raro' ? 10 : 0;
+
+  const scoreAtividade = atv_ex + atv_sent + atv_tela + atv_rs + atv_tp; // máx 200
+
+  // ── EIXO 2: ALIMENTAÇÃO (máx 180 XP) ──────────────────────
+  const up = r.ultraprocessados;
+  const ali_up = up==='nunca' ? 50 : up==='1a2' ? 35 : up==='3a4' ? 18 : 0;
+
+  const fv = r.frutasVegetais;
+  const ali_fv = fv==='5mais' ? 50 : fv==='3a4' ? 38 : fv==='1a2' ? 20 : 0;
+
+  const pr = r.pularRefeicoes;
+  const ali_pr = pr==='nunca' ? 30 : pr==='asvez' ? 20 : pr==='freq' ? 10 : 0;
+
+  const ref = r.refrigerante;
+  const ali_ref = ref==='nunca' ? 30 : ref==='1a2' ? 20 : ref==='3a4' ? 10 : 0;
+
+  const ct = r.comerTela;
+  const ali_ct = ct==='nunca' ? 20 : ct==='asvez' ? 14 : ct==='freq' ? 7 : 0;
+
+  const scoreAlimentacao = ali_up + ali_fv + ali_pr + ali_ref + ali_ct; // máx 180
+
+  // ── EIXO 3: SAÚDE MENTAL & SONO (máx 160 XP) ─────────────
+  const est = r.estresse;
+  const men_est = est==='baixo' ? 35 : est==='moderado' ? 24 : est==='alto' ? 12 : 0;
+
+  const se = r.sintomasEmocionais;
+  const men_se = se==='nunca' ? 35 : se==='asvez' ? 22 : se==='freq' ? 10 : 0;
+
+  const sono = r.horasSono;
+  const men_sono = sono==='7a8' ? 50 : sono==='mais8' ? 35 : sono==='5a6' ? 20 : 0;
+
+  const tn = r.telaNoite;
+  const men_tn = tn==='nunca' ? 20 : tn==='asvez' ? 14 : tn==='freq' ? 7 : 0;
+
+  const ac = r.acordaCansado;
+  const men_ac = ac==='nunca' ? 20 : ac==='asvez' ? 14 : ac==='freq' ? 7 : 0;
+
+  const scoreSaudeMental = men_est + men_se + men_sono + men_tn + men_ac; // máx 160
+
+  // ── EIXO 4: COMPOSIÇÃO CORPORAL (máx 180 XP) ─────────────
+  const peso = parseFloat(r.peso) || 0;
+  const altM = parseFloat(String(r.altura||'').replace(',','.')) || 1;
+  let imc_pts = 70; // neutro
+  if (peso > 0 && altM > 0) {
+    const imc = peso / (altM * altM);
+    if      (imc >= 18.5 && imc < 25)  imc_pts = 140;
+    else if (imc >= 25   && imc < 30)  imc_pts = 95;
+    else if (imc >= 30   && imc < 35)  imc_pts = 50;
+    else if (imc >= 35)                imc_pts = 10;
+    else if (imc < 18.5)               imc_pts = 70;
+  }
+
+  const ga = r.gorduraAbdominal;
+  const ga_pts = ga==='muitobaixa' ? 40 : ga==='normal' ? 30 : ga==='moderada' ? 15 : 0;
+
+  const scoreIMC = imc_pts + ga_pts; // máx 180
+
+  // ── EIXO 5: ÁLCOOL (máx 80 XP) ───────────────────────────
+  const fa = r.frequenciaAlcool;
+  const alc_fa = fa==='nunca' ? 30 : fa==='mensal' ? 22 : fa==='semanal' ? 10 : 0;
+
+  const bg = r.bingePorMes;
+  const alc_bg = bg==='nunca' ? 30 : bg==='1' ? 20 : bg==='2a3' ? 10 : 0;
+
+  const da = r.dosesAlcool;
+  const alc_da = da==='1' ? 20 : da==='2a3' ? 14 : da==='4a5' ? 7 : 0;
+
+  const scoreAlcool = alc_fa + alc_bg + alc_da; // máx 80
+
+  // ── EIXO 6: TABAGISMO & NICOTINA (máx 130 XP) ────────────
+  const cig = r.cigarro;
+  const tab_cig = cig==='nunca' ? 50 : cig==='ex' ? 35 : cig==='ocasional' ? 15 : 0;
+
+  const vp = r.vape;
+  const tab_vp = vp==='nunca' ? 40 : vp==='ex' ? 28 : vp==='ocasional' ? 12 : 0;
+
+  const ng = r.narguile;
+  const tab_ng = ng==='nunca' ? 20 : ng==='raro' ? 14 : ng==='mensal' ? 7 : 0;
+
+  const fp = r.fumacaPassiva;
+  const tab_fp = fp==='nunca' ? 20 : fp==='raro' ? 14 : fp==='freq' ? 7 : 0;
+
+  const scoreTabagismo = tab_cig + tab_vp + tab_ng + tab_fp; // máx 130
+
+  // ── EIXO 7: HISTÓRICO FAMILIAR (máx 70 XP) ───────────────
+  const dcf = r.doencaCardioFamiliar;
+  const his_dcf = dcf==='nao' ? 40 : dcf==='naosei' ? 20 : dcf==='sim' ? 15 : 0;
+
+  const obf = r.obesidadeFamiliar;
+  const his_obf = obf==='nao' ? 30 : obf==='naosei' ? 15 : obf==='sim' ? 10 : 0;
+
+  const scoreHistorico = his_dcf + his_obf; // máx 70
+
+  // ── TOTAL (máx 1000 XP) ───────────────────────────────────
+  const scores = {
+    atividade: scoreAtividade,
+    alimentacao: scoreAlimentacao,
+    saudeMental: scoreSaudeMental,
+    imc: scoreIMC,
+    alcool: scoreAlcool,
+    tabagismo: scoreTabagismo,
+    historicoFamiliar: scoreHistorico,
+  };
+  const total = scoreAtividade + scoreAlimentacao + scoreSaudeMental + scoreIMC + scoreAlcool + scoreTabagismo + scoreHistorico;
+
+  const maxMap = {
+    atividade: 200, alimentacao: 180, saudeMental: 160,
+    imc: 180, alcool: 80, tabagismo: 130, historicoFamiliar: 70,
+  };
+
+  // Eixo com menor % = maior risco
+  const eixoMaiorRisco = Object.entries(scores)
+    .map(([k,v]) => ({k, pct: v / maxMap[k]}))
+    .sort((a,b) => a.pct - b.pct)[0].k;
+
+  // Classificação de risco (máx 1000 XP)
+  const classificacao = total >= 600 ? 'Baixo' : total >= 350 ? 'Moderado' : 'Elevado';
+  const nivel = total >= 900 ? 'Lendário' : total >= 750 ? 'Épico' : total >= 600 ? 'Raro' : total >= 450 ? 'Incomum' : total >= 300 ? 'Comum' : 'Iniciante';
+
+  // Medalhas
+  const medalDefs = [
+    {eixo:'atividade',    titulo:'Corpo em Movimento', icone:'⚡'},
+    {eixo:'alimentacao',  titulo:'Nutricionista Nato',  icone:'🥗'},
+    {eixo:'saudeMental',  titulo:'Equilíbrio Mental',   icone:'🧘'},
+    {eixo:'imc',          titulo:'Composição Ideal',    icone:'⚖️'},
+    {eixo:'alcool',       titulo:'Mente Cristalina',    icone:'💎'},
+    {eixo:'tabagismo',    titulo:'Pulmão de Aço',       icone:'🫁'},
+    {eixo:'historicoFamiliar', titulo:'Guardião Genético', icone:'🧬'},
+  ];
+  const medalhas = medalDefs.map(m => {
+    const v = scores[m.eixo]; const mx = maxMap[m.eixo];
+    const pct = v / mx;
+    const tier = pct >= 0.9 ? 'Platina' : pct >= 0.7 ? 'Ouro' : pct >= 0.45 ? 'Prata' : 'Bronze';
+    const cor  = pct >= 0.9 ? '#E5E4E2' : pct >= 0.7 ? '#FFD700' : pct >= 0.45 ? '#C0C0C0' : '#CD7F32';
+    return {...m, tier, cor, pontos: v, pontos_max: mx, percentual: Math.round(pct * 100)};
+  });
+
+  return {pontosTotais: total, classificacao, nivel, scores, eixoMaiorRisco, medalhas, maxPontos: 1000};
+}
+
+
+
+// ============================================================
+// ENVIO DE EMAIL DE RECOMENDAÇÕES
+// ============================================================
+async function enviarEmailRecomendacoes(resultado) {
+  if (!ST.user?.email) return;
+  try {
+    const resp = await fetch('/functions/enviarEmailResultado', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nome: ST.user.nome || 'Participante',
+        email: ST.user.email,
+        resultado,
+      }),
+    });
+    if (resp.ok) {
+      console.log('✉️ Email de recomendações enviado para', ST.user.email);
+    } else {
+      const err = await resp.json().catch(() => ({}));
+      console.warn('Email não enviado:', err);
+    }
+  } catch(e) {
+    console.warn('Erro ao enviar email:', e);
+  }
+}
+
+// ============================================================
+// PERSISTÊNCIA DE RESULTADO
+// ============================================================
+function persistirResultado(resultado) {
+  if (!resultado) return;
+  // Sempre salvar no localStorage vinculado ao usuário
+  try {
+    const users = getUsers();
+    const ui = users.findIndex(u => u.id === ST.user?.id);
+    if (ui !== -1) {
+      users[ui].pontos   = resultado.pontosTotais;
+      users[ui].nivel    = resultado.nivel;
+      users[ui].avaliacao = resultado;
+      users[ui].avaliacaoDate = new Date().toISOString();
+      saveUsers(users);
+      saveSession(users[ui]);
+      ST.user = users[ui];
+    }
+  } catch(e) { console.warn('persistirResultado erro:', e); }
+  // Sempre manter em ST.resultado também
+  ST.resultado = resultado;
+}
+
+
+// ============================================================
+// EXIBIR RESULTADO
+// ============================================================
+function mostrarResultado(res) {
+  const {pontosTotais,classificacao,nivel,scores,eixoMaiorRisco,medalhas} = res;
+  const nivelColors = {Lendário:'#ffd700',Épico:'#bf00ff',Raro:'#00aaff',Incomum:'#00ff88',Comum:'#888',Iniciante:'#553'};
+  const riscoColors = {Baixo:'#00ff88',Moderado:'#ffe600',Elevado:'#ff003c'};
+  const nivelIcons = {Lendário:'👑',Épico:'💜',Raro:'💎',Incomum:'⚡',Comum:'🌟',Iniciante:'🌱'};
+  
+  document.getElementById('result-main-icon').textContent = nivelIcons[nivel]||'⚡';
+  document.getElementById('result-nivel').textContent = nivel.toUpperCase();
+  document.getElementById('result-nivel').style.color = nivelColors[nivel]||'#fff';
+  document.getElementById('result-nivel').style.textShadow = `0 0 20px ${nivelColors[nivel]||'#fff'}`;
+  document.getElementById('result-risco-label').textContent = `Risco ${classificacao}`;
+  document.getElementById('result-risco-label').style.color = riscoColors[classificacao];
+  document.getElementById('result-pontos').textContent = pontosTotais;
+  
+  const pct = Math.round(pontosTotais/10);
+  document.getElementById('result-bg-gradient').style.background = `linear-gradient(135deg,${riscoColors[classificacao]}22,${nivelColors[nivel]||'#fff'}22)`;
+
+  // BARRA DE PROGRESSO DE NÍVEL
+  const xpPct = Math.min(Math.round(pontosTotais / 10), 100);
+  document.getElementById('result-xp-bar').style.width = xpPct + '%';
+  // Calcular faltam para próximo nível
+  const nivelLimites = [300, 450, 600, 750, 900, 1000];
+  const nivelNomes2 = ['Comum', 'Incomum', 'Raro', 'Épico', 'Lendário', '🏆 Máximo'];
+  let proxNivel = '', faltam = 0;
+  for (let i = 0; i < nivelLimites.length; i++) {
+    if (pontosTotais < nivelLimites[i]) { proxNivel = nivelNomes2[i]; faltam = nivelLimites[i] - pontosTotais; break; }
+  }
+  if (faltam > 0) document.getElementById('result-faltam-label').textContent = `faltam ${faltam} XP para ${proxNivel}`;
+  else document.getElementById('result-faltam-label').textContent = '🏆 NÍVEL MÁXIMO ATINGIDO!';
+
+  // ESCALA DE NÍVEIS
+  const nivelEscala = [
+    {nome:'Iniciante', min:0, max:299, color:'#553'},
+    {nome:'Comum', min:300, max:449, color:'#888'},
+    {nome:'Incomum', min:450, max:599, color:'#00ff88'},
+    {nome:'Raro', min:600, max:749, color:'#00aaff'},
+    {nome:'Épico', min:750, max:899, color:'#bf00ff'},
+    {nome:'Lendário', min:900, max:1000, color:'#ffd700'},
+  ];
+  document.getElementById('result-levels-scale').innerHTML = nivelEscala.map(n => {
+    const ativo = pontosTotais >= n.min && pontosTotais <= n.max;
+    return `<div class="rounded-lg py-2 px-1 text-xs font-game transition-all ${ativo ? 'ring-2' : 'opacity-40'}" style="background:${n.color}22; border:1px solid ${n.color}; color:${n.color}; ${ativo ? 'ring-color:'+n.color+'; opacity:1; transform:scale(1.05)' : ''}">
+      <div class="font-bold text-xs">${n.nome.toUpperCase()}</div>
+      <div style="font-size:9px; opacity:0.7">${n.min}–${n.max}</div>
+    </div>`;
+  }).join('');
+
+  // PAINEL DE RISCO CARDIOVASCULAR
+  const riscoInfoData = {
+    Baixo: {
+      cor: '#00ff88', emoji: '💚',
+      titulo: 'Risco Cardiovascular Baixo',
+      desc: 'Seus hábitos atuais indicam um perfil de risco cardiovascular baixo. Isso significa que a probabilidade de você desenvolver doenças do coração nas próximas décadas é menor do que a média da população jovem.',
+      detalhe: 'Doenças cardiovasculares incluem: infarto agudo do miocárdio, AVC (derrame), insuficiência cardíaca, aterosclerose (entupimento das artérias) e arritmias. Com risco baixo, seus hábitos estão protegendo seu coração — continue assim!',
+      acao: 'Mantenha os bons hábitos e faça check-up preventivo anual.',
+    },
+    Moderado: {
+      cor: '#ffe600', emoji: '💛',
+      titulo: 'Risco Cardiovascular Moderado',
+      desc: 'Seus hábitos indicam um risco moderado de desenvolver doenças cardiovasculares no futuro. Isso não é um diagnóstico — mas é um sinal de alerta importante.',
+      detalhe: 'Com risco moderado, fatores como sedentarismo, alimentação inadequada ou estresse elevado podem, ao longo dos anos, levar ao acúmulo de placas nas artérias (aterosclerose), aumento da pressão arterial e inflamação crônica — que são precursores de infarto e AVC.',
+      acao: 'Pequenas mudanças de hábito agora têm grande impacto no futuro. Consulte as recomendações na aba "Guia".',
+    },
+    Elevado: {
+      cor: '#ff003c', emoji: '❤️',
+      titulo: 'Risco Cardiovascular Elevado',
+      desc: 'Atenção: seus hábitos atuais indicam risco elevado de desenvolver doenças cardiovasculares. Isso é um alerta sério, mas totalmente reversível com mudanças de comportamento.',
+      detalhe: 'Com esse perfil, você pode estar acumulando fatores que danificam as artérias silenciosamente: inflamação, resistência à insulina, hipertensão precoce. Doenças cardiovasculares são a principal causa de morte no Brasil, mas são preveníveis em 80% dos casos com mudança de hábitos.',
+      acao: '⚠️ Consulte um médico para avaliação preventiva e confira urgentemente as recomendações na aba "Guia".',
+    },
+  };
+  const ri = riscoInfoData[classificacao];
+  document.getElementById('result-risco-info').innerHTML = `
+    <div class="flex items-center gap-2 mb-2">
+      <span class="text-2xl">${ri.emoji}</span>
+      <span class="font-game text-sm font-bold" style="color:${ri.cor}">${ri.titulo}</span>
+    </div>
+    <p class="text-sm mb-2 opacity-80">${ri.desc}</p>
+    <p class="text-xs opacity-60 mb-2">${ri.detalhe}</p>
+    <p class="text-xs font-semibold" style="color:${ri.cor}">${ri.acao}</p>
+  `;
+  document.getElementById('result-risco-info').style.borderColor = ri.cor + '44';
+
+  // SCORES
+  const maxMap={atividade:200,alimentacao:180,saudeMental:160,imc:180,alcool:80,tabagismo:130,historicoFamiliar:70};
+  const labels={tabagismo:'🚬 Tabagismo & Nicotina',atividade:'⚡ Atividade & Telas',alimentacao:'🍔 Alimentação',alcool:'🍺 Álcool',saudeMental:'🧠 Saúde Mental & Sono',historicoFamiliar:'🧬 Histórico Familiar',imc:'⚖️ Composição Corporal'};
+  const sortedScores = Object.entries(scores).sort((a,b)=>(b[1]/maxMap[b[0]])-(a[1]/maxMap[a[0]]));
+  
+  document.getElementById('axes-breakdown').innerHTML = sortedScores.map(([k,v])=>{
+    const mx=maxMap[k]; const p=Math.round(v/mx*100);
+    const color = p>=70?'progress-fill-green':p>=45?'progress-fill-yellow':'progress-fill-red';
+    const tierColor = p>=70?'#00ff88':p>=45?'#ffe600':'#ff003c';
+    return `<div>
+      <div class="flex justify-between items-center text-xs mb-1">
+        <span class="opacity-70">${labels[k]}</span>
+        <div class="flex items-center gap-2">
+          <span style="color:${tierColor}" class="font-game font-bold">${v} / ${mx} XP</span>
+          <button onclick="showGuia('${k}')" class="font-game hover:underline" style="font-size:9px;color:#00f5ff;letter-spacing:0.05em">GUIA ↗</button>
+        </div>
+      </div>
+      <div class="progress-neon h-3"><div class="${color} h-3 transition-all" style="width:${p}%"></div></div>
+    </div>`;
+  }).join('');
+
+  // MEDALHAS
+  const tierClass = {Platina:'medal-platinum',Ouro:'medal-gold',Prata:'medal-silver',Bronze:'medal-bronze'};
+  document.getElementById('medals-grid').innerHTML = medalhas.map(m=>`
+    <div class="medal-card ${tierClass[m.tier]||'medal-bronze'}">
+      <div class="text-3xl mb-2">${m.icone}</div>
+      <div class="text-xs font-game font-bold" style="color:${m.cor}">${m.tier.toUpperCase()}</div>
+      <div class="text-xs font-semibold mt-1 text-white">${m.titulo}</div>
+      <div class="font-game text-xs mt-1 opacity-50">${m.percentual}%</div>
+    </div>
+  `).join('');
+
+  // RECOMENDAÇÕES DETALHADAS
+  const recsData = getDetailedRecs(classificacao, scores, maxMap, eixoMaiorRisco);
+  document.getElementById('recommendations-detail').innerHTML = recsData.map(r=>`
+    <div class="rec-card ${r.urgency||'warning'}">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="text-xl">${r.icon}</span>
+        <div>
+          <div class="font-game text-xs tracking-widest" style="color:${r.color}">${r.tag}</div>
+          <div class="font-semibold text-white text-sm">${r.title}</div>
+        </div>
+      </div>
+      <p class="text-sm opacity-70 mb-2">${r.desc}</p>
+      <div class="space-y-1">
+        ${r.steps.map(s=>`<div class="flex gap-2 text-xs opacity-60"><span style="color:${r.color}">▶</span><span>${s}</span></div>`).join('')}
+      </div>
+      ${r.science?`<div class="mt-2 text-xs opacity-40 font-game">📚 ${r.science}</div>`:''}
+    </div>
+  `).join('');
+
+  showScreen('screen-result');
+}
+
+function getDetailedRecs(risco, scores, maxMap, eixoPrincipal) {
+  const pcts = {};
+  Object.entries(scores).forEach(([k,v])=> pcts[k]=v/maxMap[k]);
+
+  const allRecs = {
+    tabagismo: {
+      icon:'🚭', color:'#ff003c', tag:'EIXO 6 — TABAGISMO & NICOTINA',
+      title:'Eliminar o uso de nicotina', urgency:'danger',
+      desc:'Tabagismo é o principal fator de risco cardiovascular modificável. Mesmo o vape e narguilé aumentam drasticamente o risco de infarto, AVC e morte súbita em jovens. A boa notícia: o risco começa a cair em 24h após parar!',
+      steps:[
+        'Defina uma data para parar de fumar (próximas 2 semanas)',
+        'Informe amigos e família — suporte social aumenta em 2x a chance de sucesso',
+        'Considere terapia de reposição de nicotina (adesivos, gomas) com orientação médica',
+        'Evite gatilhos: álcool, festas, situações de estresse nas primeiras semanas',
+        'Procure o CAPS ou UBS: programas gratuitos de cessação de tabagismo',
+      ],
+      science:'Benowitz & Fraiman (2017): efeitos cardiovasculares do cigarro eletrônico e nicotina. Nature Reviews Cardiology, v.14, n.8, p.447-456.'
+    },
+    atividade: {
+      icon:'🏃', color:'#00f5ff', tag:'EIXO 1 — ATIVIDADE FÍSICA & TELAS',
+      title:'Combater o sedentarismo e reduzir telas', urgency:'warning',
+      desc:'Menos de 3x/semana de exercício e mais de 4h de tela/dia é uma combinação perigosa. O sedentarismo digital afeta o coração mesmo em quem "acha que é jovem demais" para se preocupar.',
+      steps:[
+        'Meta inicial: 30 min de caminhada rápida, 5x/semana (OMS: 150 min/semana)',
+        'Limite telas recreativas a 2h/dia — use apps de tempo de tela para monitorar',
+        'Tente a regra 20-20-20: a cada 20 min sentado, levante por 2 minutos',
+        'Troque 1 trajeto de carro/ônibus por caminhada ou bicicleta por semana',
+        'Encontre um esporte ou dança que você goste — consistência > intensidade',
+      ],
+      science:'Ekelund et al. (2019): associações dose-resposta entre atividade física e mortalidade. BMJ, v.366, l4570.'
+    },
+    alimentacao: {
+      icon:'🥗', color:'#00ff88', tag:'EIXO 2 — ALIMENTAÇÃO',
+      title:'Redesenhar a dieta para proteger o coração', urgency:'warning',
+      desc:'Ultraprocessados são a principal causa de inflamação crônica e aterosclerose precoce. A dieta brasileira tem piorado significativamente na faixa jovem — mas pequenas mudanças geram grandes resultados.',
+      steps:[
+        'Regra de ouro: se tem mais de 5 ingredientes ou você não reconhece os nomes, evite',
+        'Aumente frutas e vegetais: objetivo é 400g/dia (3-5 porções) — Programa Saúde na Escola',
+        'Troque refrigerantes por água com gás, chá gelado sem açúcar ou água saborizada',
+        'Coma sem tela: reduz ingestão calórica inconsciente em ~22%',
+        'Cozinhe em casa pelo menos 3x/semana — controle total dos ingredientes',
+      ],
+      science:'Mozaffarian (2016): prioridades dietéticas para doenças cardiovasculares, diabetes e obesidade. Circulation, v.133, n.2, p.187-225.'
+    },
+    alcool: {
+      icon:'🍹', color:'#ffe600', tag:'EIXO 5 — ÁLCOOL',
+      title:'Reduzir o consumo de álcool e eliminar binge', urgency:'warning',
+      desc:'Não existe "dose segura" de álcool para o coração (WHO, 2023). Binge drinking em jovens é causa crescente de arritmias, hipertensão e morte súbita — mesmo sem histórico familiar.',
+      steps:[
+        'Se beber, limite a 1-2 drinks/semana — e nunca mais de 2 por ocasião',
+        'Elimine o binge drinking: defina um máximo de 2 drinks por saída social',
+        'Tenha "dias sem álcool" planejados: pelo menos 4-5 dias/semana sem consumo',
+        'Substitua por opções sem álcool em festas: kombucha, mocktails, água com limão',
+        'Se sentir dificuldade de reduzir, busque apoio no CAPS ou com psicólogo',
+      ],
+      science:'Kotseva et al. (2014): fatores de risco cardiovascular em jovens adultos. Journal of Preventive Cardiology.'
+    },
+    saudeMental: {
+      icon:'🧘', color:'#bf00ff', tag:'EIXO 3 — SAÚDE MENTAL & SONO',
+      title:'Priorizar sono e gerenciar estresse', urgency:'warning',
+      desc:'Estresse crônico ativa o eixo HPA, elevando cortisol e inflamação — fatores que danificam as artérias ao longo do tempo. Dormir mal é tão perigoso quanto fumar em termos cardiovasculares.',
+      steps:[
+        'Priorize 7-8h de sono: crie uma rotina fixa de dormir e acordar (mesmos horários)',
+        'Desligue telas 1h antes de dormir — troque por leitura, meditação ou conversa',
+        'Pratique respiração 4-7-8: inspire 4s, segure 7s, expire 8s — reduz cortisol',
+        'Considere meditação: 10-15 min/dia reduz pressão arterial em até 5 mmHg (AHA)',
+        'Terapia psicológica muda fisiologia — não é frescura, é prevenção cardiovascular',
+      ],
+      science:'St-Onge et al. (2016): duração e qualidade do sono — impacto em comportamentos e saúde cardiometabólica. Circulation, v.134, n.18, p.e367-e386.'
+    },
+    historicoFamiliar: {
+      icon:'🧬', color:'#00aaff', tag:'EIXO 7 — HISTÓRICO FAMILIAR',
+      title:'Atenção redobrada ao seu DNA cardiovascular', urgency:'warning',
+      desc:'Histórico familiar positivo para infarto, AVC ou diabetes não é sentença — mas exige vigilância maior. Seus genes carregam informação; seus hábitos decidem o que vai ser expresso.',
+      steps:[
+        'Informe seu médico e cardiologista sobre o histórico familiar detalhado',
+        'Faça check-up anual a partir de agora: pressão, glicemia e lipidograma',
+        'Com histórico de infarto familiar precoce, peça eletrocardiograma preventivo',
+        'Controle todos os outros eixos com mais rigor — compensação epigenética',
+        'Pesquise seu histórico familiar completo: quanto mais detalhe, melhor a prevenção',
+      ],
+      science:'Kotseva et al. (2014): revisão de fatores de risco cardiovascular em jovens adultos. Journal of Preventive Cardiology.'
+    },
+    imc: {
+      icon:'⚖️', color:'#ffe600', tag:'EIXO 4 — COMPOSIÇÃO CORPORAL',
+      title:'Buscar composição corporal saudável', urgency:'',
+      desc:'Excesso de peso em jovens é o principal preditor de síndrome metabólica futura — que combina hipertensão, diabetes e dislipidemia. O IMC ideal reduz o trabalho do coração em todos os momentos.',
+      steps:[
+        'Meta realista: perder 0.5-1 kg/semana com dieta equilibrada e exercício',
+        'Foque em composição (mais músculo, menos gordura) — não apenas no número da balança',
+        'Consulte um nutricionista: dietas radicais pioram o metabolismo cardiovascular',
+        'Hidratação: 2-3L de água/dia ativa metabolismo e reduz inflamação',
+        'Sono adequado (7-8h) regula grelina e leptina — hormônios que controlam fome',
+      ],
+      science:'Poole et al. (2018): obesidade e o sistema cardiovascular em jovens adultos. Current Cardiology Reports, v.20, n.8.'
+    },
+  };
+
+  // Ordenar por urgência (menor percentual = maior urgência)
+  const sorted = Object.entries(pcts).sort((a,b)=>a[1]-b[1]);
+  const result = [];
+  
+  sorted.forEach(([k])=>{
+    if (allRecs[k]) {
+      const rec = {...allRecs[k]};
+      const p = pcts[k];
+      if (p >= 0.7) rec.urgency = 'good';
+      else if (p >= 0.45) rec.urgency = 'warning';
+      else rec.urgency = 'danger';
+      result.push(rec);
+    }
+  });
+
+  // Adicionar recomendação geral baseada no risco
+  if (risco === 'Baixo') {
+    result.push({
+      icon:'🏆', color:'#00ff88', tag:'PARABÉNS!', urgency:'good',
+      title:'Mantenha o estilo de vida saudável',
+      desc:'Seu perfil está excelente! Mas prevenção cardiovascular é uma jornada contínua — não um destino.',
+      steps:['Mantenha os hábitos saudáveis atuais com consistência','Faça check-up preventivo anual mesmo sem sintomas','Compartilhe sua jornada — inspira outros jovens a cuidarem da saúde'],
+      science:null
+    });
+  }
+  return result;
+}
+
+// ============================================================
+// PERFIL
+// ============================================================
+function loadProfile() {
+  // Sempre reler dados frescos do localStorage
+  const sess = getSession();
+  if (sess) {
+    const users = getUsers();
+    const fresh = users.find(u => u.id === sess.id);
+    if (fresh) { ST.user = fresh; saveSession(fresh); }
+    else ST.user = sess;
+  }
+  if (!ST.user) return;
+  // Restaurar ST.resultado se perdeu da memória (ex: usuário voltou ao perfil)
+  if (!ST.resultado && ST.user.avaliacao) {
+    ST.resultado = ST.user.avaliacao;
+  }
+  document.getElementById('profile-name').textContent = ST.user.nome?.toUpperCase() || 'JOGADOR';
+  document.getElementById('profile-email').textContent = ST.user.email || '—';
+  const pts = ST.user.pontos || 0;
+  document.getElementById('profile-points').textContent = pts;
+  document.getElementById('profile-xp-label').textContent = `${pts}/1000`;
+  document.getElementById('profile-xp-bar').style.width = Math.min(pts/10,100)+'%';
+  document.getElementById('profile-lembretes').checked = ST.user.lembretes || false;
+  
+  const nivel = ST.user.nivel || 'Iniciante';
+  const levelEl = document.getElementById('profile-level-badge');
+  const nivelClasses = {Lendário:'level-legendary',Épico:'level-epic',Raro:'level-rare',Incomum:'level-uncommon',Comum:'level-common',Iniciante:'level-iniciante'};
+  levelEl.textContent = nivel.toUpperCase();
+  levelEl.className = `mt-1 px-3 py-1 rounded-full text-xs font-game inline-block ${nivelClasses[nivel]||'level-iniciante'}`;
+  
+  if (ST.user.avaliacao) {
+    document.getElementById('profile-last-eval').style.display = 'block';
+    document.getElementById('profile-no-eval').style.display = 'none';
+    const av = ST.user.avaliacao;
+    const {scores, classificacao, nivel: avNivel, pontosTotais} = av;
+    const maxMap={atividade:200,alimentacao:180,saudeMental:160,imc:180,alcool:80,tabagismo:130,historicoFamiliar:70};
+    const labels={atividade:'⚡ Atividade Física & Telas',alimentacao:'🍔 Alimentação',saudeMental:'🧠 Saúde Mental & Sono',imc:'⚖️ Composição Corporal',alcool:'🍺 Álcool',tabagismo:'🚬 Tabagismo & Nicotina',historicoFamiliar:'🧬 Histórico Familiar'};
+    const riscoColors2={Baixo:'#00ff88',Moderado:'#ffe600',Elevado:'#ff003c'};
+    const profileHeader = document.getElementById('profile-eval-header');
+    if (profileHeader) {
+      profileHeader.innerHTML = `<div class="flex gap-3 mb-4 text-center">
+        <div class="flex-1 rounded-xl p-3" style="background:${riscoColors2[classificacao]||'#fff'}22;border:1px solid ${riscoColors2[classificacao]||'#fff'}44">
+          <div class="font-game text-xs opacity-50">RISCO</div>
+          <div class="font-game font-bold" style="color:${riscoColors2[classificacao]||'#fff'}">${classificacao||'—'}</div>
+        </div>
+        <div class="flex-1 rounded-xl p-3" style="background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.2)">
+          <div class="font-game text-xs opacity-50">XP TOTAL</div>
+          <div class="font-game font-bold neon-yellow">${pontosTotais||pts}/1000</div>
+        </div>
+        <div class="flex-1 rounded-xl p-3" style="background:rgba(191,0,255,0.1);border:1px solid rgba(191,0,255,0.2)">
+          <div class="font-game text-xs opacity-50">NÍVEL</div>
+          <div class="font-game font-bold neon-purple">${avNivel||'—'}</div>
+        </div>
+      </div>`;
+    }
+    document.getElementById('profile-scores').innerHTML = Object.entries(scores).map(([k,v])=>{
+      const mx=maxMap[k]; const p=Math.round(v/mx*100);
+      const col=p>=70?'progress-fill-green':p>=45?'progress-fill-yellow':'progress-fill-red';
+      const tc=p>=70?'#00ff88':p>=45?'#ffe600':'#ff003c';
+      return `<div><div class="flex justify-between text-xs mb-1">
+        <span class="opacity-60">${labels[k]}</span>
+        <div class="flex items-center gap-2">
+          <span class="font-game" style="color:${tc}">${v}/${mx} XP</span>
+          <button onclick="showGuia('${k}')" class="text-xs neon-cyan hover:underline font-game" style="font-size:9px">GUIA ↗</button>
+        </div>
+      </div><div class="progress-neon h-2"><div class="${col} h-2" style="width:${p}%"></div></div></div>`;
+    }).join('');
+    // Aviso clínico
+    const aviso = document.getElementById('profile-aviso-clinico');
+    if (aviso) aviso.style.display = 'block';
+    // Mostrar data da avaliação
+    const dateEl = document.getElementById('profile-eval-date');
+    if (dateEl && ST.user.avaliacaoDate) {
+      dateEl.textContent = `Última avaliação: ${new Date(ST.user.avaliacaoDate).toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric', hour:'2-digit', minute:'2-digit'})}`;
+    }
+  } else {
+    document.getElementById('profile-last-eval').style.display = 'none';
+    document.getElementById('profile-no-eval').style.display = 'block';
+    const aviso = document.getElementById('profile-aviso-clinico');
+    if (aviso) aviso.style.display = 'none';
+  }
+}
+
+function saveProfileSettings() {
+  if (!ST.user) return;
+  const lembretes = document.getElementById('profile-lembretes').checked;
+  const users = getUsers();
+  const ui = users.findIndex(u => u.id === ST.user.id);
+  if (ui !== -1) { users[ui].lembretes = lembretes; saveUsers(users); saveSession(users[ui]); ST.user = users[ui]; }
+  // Flash feedback
+  const btn = document.querySelector('button[onclick="saveProfileSettings()"]');
+  const orig = btn.textContent; btn.textContent = '✓ SALVO!';
+  setTimeout(()=>btn.textContent=orig, 1500);
+}
+
+// Override showScreen to load profile when needed
+const _showScreen = showScreen;
+window.showScreen = function(id) {
+  _showScreen(id);
+  if (id === 'screen-home') loadHomeScreen();
+  ST.screen = id;
+  if (id === 'screen-profile') loadProfile();
+};
+
+// ============================================================
+// PESQUISADOR
+// ============================================================
+const R_CREDS = { email:'pesquisador@cardio.br', password:'cardio2024' };
+
+function researcherLogin() {
+  const e = document.getElementById('researcher-email').value;
+  const p = document.getElementById('researcher-password').value;
+  if (e === R_CREDS.email && p === R_CREDS.password) {
+    document.getElementById('login-error-r').classList.add('hidden');
+    showScreen('screen-dashboard');
+    loadDashboard();
+  } else {
+    document.getElementById('login-error-r').classList.remove('hidden');
+  }
+}
+
+function researcherLogout() { showScreen('screen-home'); }
+
+async function loadDashboard() {
+  try {
+    const r = await fetch('/api/entities/Participante?limit=500');
+    if (r.ok) { const d = await r.json(); ST.participants = d.results || d || []; }
+    else ST.participants = demoParticipants();
+  } catch { ST.participants = demoParticipants(); }
+  
+  try {
+    const r = await fetch('/api/entities/Conversa?limit=500');
+    if (r.ok) { const d = await r.json(); ST.conversations = d.results || d || []; }
+  } catch {}
+  
+  renderOverview();
+  renderStats();
+  renderParticipants();
+  renderConversations();
+}
+
+function demoParticipants() {
+  const names=['Ana Lima','Pedro Silva','Julia Costa','Lucas Oliveira','Beatriz Santos','Gabriel Ferreira','Isabela Rodrigues','Mateus Alves','Larissa Pereira','Rafael Nascimento','Camila Torres','Diego Moura'];
+  const risks=['Baixo','Moderado','Elevado'];
+  const niveis=['Lendário','Épico','Raro','Incomum','Comum','Iniciante'];
+  const axes=['tabagismo','atividade','alimentacao','alcool','saudeMental'];
+  const sexos=['Masculino','Feminino','Não-binário','Transgênero Feminino'];
+  return names.map((nome,i)=>({
+    id:`demo-${i}`, nome, idade:15+Math.floor(Math.random()*15),
+    sexo:sexos[i%sexos.length],
+    cidade:['São Paulo','Rio de Janeiro','Curitiba','Belo Horizonte','Fortaleza'][i%5],
+    estado:['SP','RJ','PR','MG','CE'][i%5],
+    pontos_totais:Math.floor(150+Math.random()*800),
+    classificacao_risco:risks[i%3], nivel:niveis[i%6],
+    eixo_maior_risco:axes[i%5],
+    receber_lembretes:i%3===0,
+    score_tabagismo:Math.floor(Math.random()*130),
+    score_atividade:Math.floor(Math.random()*200),
+    score_alimentacao:Math.floor(Math.random()*200),
+    score_alcool:Math.floor(Math.random()*100),
+    score_saude_mental:Math.floor(Math.random()*100),
+    score_historico_familiar:Math.floor(Math.random()*100),
+    score_imc:Math.floor(Math.random()*50),
+    created_date:new Date(Date.now()-Math.random()*30*24*3600000).toISOString(),
+  }));
+}
+
+function renderOverview() {
+  const ps = ST.participants;
+  document.getElementById('stat-total').textContent = ps.length;
+  document.getElementById('stat-low').textContent = ps.filter(p=>p.classificacao_risco==='Baixo').length;
+  document.getElementById('stat-moderate').textContent = ps.filter(p=>p.classificacao_risco==='Moderado').length;
+  document.getElementById('stat-high').textContent = ps.filter(p=>p.classificacao_risco==='Elevado').length;
+  
+  // Gráfico risco
+  const ctx1 = document.getElementById('chart-risk').getContext('2d');
+  if(window._cr1)window._cr1.destroy();
+  window._cr1 = new Chart(ctx1, {
+    type:'doughnut',
+    data:{ labels:['Risco Baixo','Risco Moderado','Risco Elevado'],
+      datasets:[{data:[ps.filter(p=>p.classificacao_risco==='Baixo').length,ps.filter(p=>p.classificacao_risco==='Moderado').length,ps.filter(p=>p.classificacao_risco==='Elevado').length],
+      backgroundColor:['#00ff88','#ffe600','#ff003c'],borderWidth:0,hoverOffset:8}]},
+    options:{plugins:{legend:{position:'bottom',labels:{color:'#aaa',font:{family:'Orbitron',size:10}}}},cutout:'65%'}
+  });
+
+  // Gráfico eixos
+  const fields=['score_atividade','score_alimentacao','score_saude_mental','score_imc','score_alcool','score_tabagismo','score_historico_familiar'];
+  const axlbls=['Ativ.','Alim.','Mental','IMC','Álcool','Tabag.','Genét.'];
+  const maxM=[200,180,160,180,80,130,70];
+  const avgs=fields.map((f,i)=>{const vals=ps.filter(p=>p[f]!=null).map(p=>parseFloat(p[f]));return vals.length?(vals.reduce((a,b)=>a+b,0)/vals.length/maxM[i]*100).toFixed(1):0;});
+  const ctx2=document.getElementById('chart-axes').getContext('2d');
+  if(window._cr2)window._cr2.destroy();
+  window._cr2=new Chart(ctx2,{
+    type:'bar',
+    data:{labels:axlbls,datasets:[{label:'% do máximo',data:avgs,backgroundColor:['#ff003c33','#00f5ff33','#00ff8833','#ffe60033','#bf00ff33','#00f5ff33','#ffe60033'],borderColor:['#ff003c','#00f5ff','#00ff88','#ffe600','#bf00ff','#00f5ff','#ffe600'],borderWidth:1,borderRadius:4}]},
+    options:{scales:{y:{min:0,max:100,ticks:{color:'#666',font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'}},x:{ticks:{color:'#aaa',font:{family:'Inter',size:9}},grid:{display:false}}},plugins:{legend:{display:false}}}
+  });
+
+  // Níveis
+  const niveles={Lendário:0,Épico:0,Raro:0,Incomum:0,Comum:0,Iniciante:0};
+  ps.forEach(p=>{ if(p.nivel && niveles[p.nivel]!==undefined) niveles[p.nivel]++; });
+  const nivelColors2={Lendário:'#ffd700',Épico:'#bf00ff',Raro:'#00aaff',Incomum:'#00ff88',Comum:'#888',Iniciante:'#553'};
+  const maxN=Math.max(...Object.values(niveles),1);
+  document.getElementById('levels-chart').innerHTML=Object.entries(niveles).map(([k,v])=>`
+    <div class="flex items-center gap-3 text-xs">
+      <span class="font-game w-20 opacity-70">${k.toUpperCase()}</span>
+      <div class="flex-1 progress-neon h-4"><div class="h-4 rounded-sm transition-all" style="width:${Math.round(v/maxN*100)}%;background:${nivelColors2[k]};box-shadow:0 0 8px ${nivelColors2[k]}66"></div></div>
+      <span class="font-game w-6 opacity-70">${v}</span>
+    </div>`).join('');
+}
+
+function renderStats() {
+  const ps = ST.participants.filter(p=>p.pontos_totais!=null);
+  if (!ps.length) return;
+  const pts = ps.map(p=>parseInt(p.pontos_totais)||0);
+  document.getElementById('stat-avg-pts').textContent = Math.round(pts.reduce((a,b)=>a+b,0)/pts.length);
+  document.getElementById('stat-max-pts').textContent = Math.max(...pts);
+  document.getElementById('stat-min-pts').textContent = Math.min(...pts);
+  document.getElementById('stat-lembretes').textContent = ST.participants.filter(p=>p.receber_lembretes).length;
+
+  // Sexo
+  const sexoCount={};
+  ST.participants.forEach(p=>{if(p.sexo)sexoCount[p.sexo]=(sexoCount[p.sexo]||0)+1;});
+  const ctx3=document.getElementById('chart-sexo').getContext('2d');
+  if(window._cr3)window._cr3.destroy();
+  window._cr3=new Chart(ctx3,{
+    type:'pie',
+    data:{labels:Object.keys(sexoCount),datasets:[{data:Object.values(sexoCount),backgroundColor:['#00f5ff','#bf00ff','#00ff88','#ffe600','#ff003c','#888'],borderWidth:0}]},
+    options:{plugins:{legend:{position:'bottom',labels:{color:'#aaa',font:{size:9}}}}}
+  });
+
+  // Faixa etária
+  const ageBuckets={'15-17':0,'18-20':0,'21-23':0,'24-26':0,'27-29':0};
+  ST.participants.forEach(p=>{const a=parseInt(p.idade)||0;if(a>=15&&a<=17)ageBuckets['15-17']++;else if(a<=20)ageBuckets['18-20']++;else if(a<=23)ageBuckets['21-23']++;else if(a<=26)ageBuckets['24-26']++;else if(a<=29)ageBuckets['27-29']++;});
+  const ctx4=document.getElementById('chart-age').getContext('2d');
+  if(window._cr4)window._cr4.destroy();
+  window._cr4=new Chart(ctx4,{
+    type:'bar',
+    data:{labels:Object.keys(ageBuckets),datasets:[{label:'Participantes',data:Object.values(ageBuckets),backgroundColor:'#00f5ff33',borderColor:'#00f5ff',borderWidth:1,borderRadius:4}]},
+    options:{scales:{y:{ticks:{color:'#666'},grid:{color:'rgba(255,255,255,0.05)'}},x:{ticks:{color:'#aaa'},grid:{display:false}}},plugins:{legend:{display:false}}}
+  });
+
+  // Eixo principal
+  const axisCount={};
+  ST.participants.forEach(p=>{if(p.eixo_maior_risco)axisCount[p.eixo_maior_risco]=(axisCount[p.eixo_maior_risco]||0)+1;});
+  const axlbls2={atividade:'⚡ Atividade & Telas',alimentacao:'🍔 Alimentação',saudeMental:'🧠 Saúde Mental',imc:'⚖️ Composição',alcool:'🍺 Álcool',tabagismo:'🚬 Tabagismo',historicoFamiliar:'🧬 Histórico Familiar'};
+  const maxA=Math.max(...Object.values(axisCount),1);
+  document.getElementById('chart-main-axis').innerHTML=Object.entries(axisCount).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
+    <div class="flex items-center gap-3 text-xs">
+      <span class="w-32 opacity-70">${axlbls2[k]||k}</span>
+      <div class="flex-1 progress-neon h-3"><div class="progress-fill-cyan h-3 transition-all" style="width:${Math.round(v/maxA*100)}%"></div></div>
+      <span class="font-game opacity-70 w-6">${v}</span>
+    </div>`).join('') || '<p class="opacity-30 text-xs font-game">SEM DADOS</p>';
+
+  // Histograma
+  const buckets=[0,0,0,0,0,0,0,0,0,0];
+  pts.forEach(p=>{const b=Math.min(Math.floor(p/100),9);buckets[b]++;});
+  const ctx5=document.getElementById('chart-hist').getContext('2d');
+  if(window._cr5)window._cr5.destroy();
+  window._cr5=new Chart(ctx5,{
+    type:'bar',
+    data:{labels:['0-99','100-199','200-299','300-399','400-499','500-599','600-699','700-799','800-899','900+'],
+      datasets:[{data:buckets,backgroundColor:buckets.map((_,i)=>i>=6?'#00ff8855':'#ff003c55'),borderColor:buckets.map((_,i)=>i>=6?'#00ff88':'#ff003c'),borderWidth:1,borderRadius:3}]},
+    options:{scales:{y:{ticks:{color:'#666'},grid:{color:'rgba(255,255,255,0.05)'}},x:{ticks:{color:'#888',font:{size:9}},grid:{display:false}}},plugins:{legend:{display:false}}}
+  });
+}
+
+function renderParticipants() {
+  const riskColors={Baixo:'color:#00ff88',Moderado:'color:#ffe600',Elevado:'color:#ff003c'};
+  const nivelColors3={Lendário:'#ffd700',Épico:'#bf00ff',Raro:'#00aaff',Incomum:'#00ff88',Comum:'#888',Iniciante:'#553'};
+  const axlbls={tabagismo:'🚬 Tab.',atividade:'⚡ Ativ.',alimentacao:'🍔 Alim.',alcool:'🍺 Álc.',saudeMental:'🧠 Men.',historicoFamiliar:'🧬 Gen.',imc:'⚖️ IMC'};
+  
+  document.getElementById('participants-table').innerHTML = ST.participants.map(p=>`
+    <tr style="border-bottom:1px solid rgba(0,245,255,0.05)" class="hover:bg-white/2 transition-all">
+      <td class="px-4 py-3 font-semibold text-white">${p.nome||'—'}</td>
+      <td class="px-4 py-3 opacity-50">${p.idade||'—'}a / ${p.sexo?p.sexo.charAt(0)+'.'||'—':'—'}</td>
+      <td class="px-4 py-3 opacity-50">${p.cidade||'—'}, ${p.estado||'—'}</td>
+      <td class="px-4 py-3 text-center font-game font-bold" style="color:#ffe600">${p.pontos_totais||'—'}</td>
+      <td class="px-4 py-3 text-center"><span class="font-game text-xs px-2 py-1 rounded-sm" style="${p.nivel?`color:${nivelColors3[p.nivel]||'#fff'};border:1px solid ${nivelColors3[p.nivel]||'#fff'}33`:'opacity:30'}">${p.nivel||'—'}</span></td>
+      <td class="px-4 py-3 text-center"><span class="font-game text-xs" style="${riskColors[p.classificacao_risco]||'opacity:0.3'}">${p.classificacao_risco||'—'}</span></td>
+      <td class="px-4 py-3 opacity-50">${axlbls[p.eixo_maior_risco]||p.eixo_maior_risco||'—'}</td>
+      <td class="px-4 py-3 text-center"><button onclick="showParticipantModal('${p.id}')" class="text-xs neon-cyan hover:underline font-game">VER</button></td>
+    </tr>`).join('') || '<tr><td colspan="8" class="text-center py-8 opacity-30 font-game text-xs">SEM DADOS</td></tr>';
+}
+
+function renderConversations() {
+  const list = document.getElementById('conversations-list');
+  list.innerHTML = ST.conversations.map(c=>`
+    <button onclick="showConversation('${c.id}')" class="w-full text-left p-3 rounded-lg hover:bg-white/5 transition" style="border:1px solid rgba(0,245,255,0.1)">
+      <div class="font-game text-xs neon-cyan">#${c.id?.slice(-6)||'------'}</div>
+      <div class="text-xs opacity-50 mt-1">${c.status} • ${c.pontos_gamificacao||0} XP</div>
+      <div class="text-xs opacity-30">${c.created_date?new Date(c.created_date).toLocaleDateString('pt-BR'):'—'}</div>
+    </button>`).join('') || '<p class="font-game text-xs opacity-30 text-center py-4">SEM CONVERSAS</p>';
+}
+
+function showConversation(id) {
+  const conv = ST.conversations.find(c=>c.id===id);
+  if (!conv) return;
+  document.getElementById('conv-detail-title').textContent = `// CONVERSA #${id.slice(-6)} • ${conv.badge||conv.pontos_gamificacao+' XP'}`;
+  const msgs = conv.mensagens || [];
+  document.getElementById('conv-detail').innerHTML = msgs.map(m=>`
+    <div class="flex gap-2 ${m.role==='user'?'justify-end':''}">
+      ${m.role==='bot'?'<div class="text-base">🤖</div>':''}
+      <div class="${m.role==='bot'?'bubble-bot text-blue-200':'bubble-user text-blue-300'} px-3 py-2 text-xs max-w-xs" style="font-family:Inter">${m.content}</div>
+      ${m.role==='user'?'<div class="text-base">👤</div>':''}
+    </div>`).join('') || '<p class="opacity-30 text-xs font-game text-center py-4">SEM MENSAGENS</p>';
+}
+
+function showParticipantModal(id) {
+  const p = ST.participants.find(x=>x.id===id);
+  if (!p) return;
+  document.getElementById('modal-name').textContent = `// ${p.nome?.toUpperCase()||'PARTICIPANTE'}`;
+  const maxMap={score_atividade:200,score_alimentacao:180,score_saude_mental:160,score_imc:180,score_alcool:80,score_tabagismo:130,score_historico_familiar:70};
+  const lbls={score_atividade:'⚡ Atividade & Telas',score_alimentacao:'🍔 Alimentação',score_saude_mental:'🧠 Saúde Mental',score_imc:'⚖️ Composição',score_alcool:'🍺 Álcool',score_tabagismo:'🚬 Tabagismo',score_historico_familiar:'🧬 Histórico Familiar'};
+  document.getElementById('modal-content').innerHTML = `
+    <div class="grid grid-cols-2 gap-3 mb-4 text-xs">
+      ${[['Idade',p.idade+'a'],['Sexo',p.sexo],['Local',`${p.cidade}, ${p.estado}`],['XP Total',p.pontos_totais||'—'],['Nível',p.nivel||'—'],['Risco',p.classificacao_risco||'—']].map(([l,v])=>`
+        <div class="game-card-purple p-3 rounded-lg"><span class="font-game text-xxs opacity-40 block uppercase tracking-widest">${l}</span><span class="font-semibold text-white text-sm">${v||'—'}</span></div>`).join('')}
+    </div>
+    <div class="font-game text-xs neon-cyan tracking-widest mb-3 uppercase">// Scores por Eixo</div>
+    <div class="space-y-2">
+      ${Object.entries(maxMap).map(([k,mx])=>{
+        const v=parseFloat(p[k])||0; const pct=Math.round(v/mx*100);
+        const col=pct>=70?'progress-fill-green':pct>=45?'progress-fill-yellow':'progress-fill-red';
+        const tc=pct>=70?'#00ff88':pct>=45?'#ffe600':'#ff003c';
+        return `<div class="text-xs"><div class="flex justify-between mb-1"><span class="opacity-60">${lbls[k]}</span><span style="color:${tc}" class="font-game">${v}/${mx}</span></div><div class="progress-neon h-2"><div class="${col} h-2 transition-all" style="width:${pct}%"></div></div></div>`;
+      }).join('')}
+    </div>
+    <div class="mt-4 text-center py-2 rounded-lg font-game text-sm" style="border:1px solid ${p.classificacao_risco==='Baixo'?'#00ff88':p.classificacao_risco==='Moderado'?'#ffe600':'#ff003c'};color:${p.classificacao_risco==='Baixo'?'#00ff88':p.classificacao_risco==='Moderado'?'#ffe600':'#ff003c'}">
+      RISCO ${(p.classificacao_risco||'—').toUpperCase()}
+    </div>`;
+  document.getElementById('modal-participant').classList.remove('hidden');
+}
+
+function closeModal() { document.getElementById('modal-participant').classList.add('hidden'); }
+
+function exportCSV() {
+  const hdrs=['Nome','Idade','Sexo','Cidade','Estado','XP Total','Nível','Risco','Eixo Principal','Tab.','Ativ.','Alim.','Álcool','Mental','Familiar','IMC','Lembretes','Data'];
+  const rows=ST.participants.map(p=>[p.nome,p.idade,p.sexo,p.cidade,p.estado,p.pontos_totais,p.nivel,p.classificacao_risco,p.eixo_maior_risco,p.score_tabagismo,p.score_atividade,p.score_alimentacao,p.score_alcool,p.score_saude_mental,p.score_historico_familiar,p.score_imc,p.receber_lembretes?'Sim':'Não',p.created_date?new Date(p.created_date).toLocaleDateString('pt-BR'):'']);
+  const csv=[hdrs,...rows].map(r=>r.map(v=>`"${v??''}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'}));
+  a.download=`cardioJovem_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+// ============================================================
+// GUIA POR EIXO
+// ============================================================
+const guiasData = {
+  tabagismo: {
+    titulo: '🚬 Guia: Tabagismo & Nicotina',
+    cor: '#ff003c',
+    intro: 'O tabagismo e a nicotina são fatores centrais de risco cardiovascular em jovens. Benowitz e Fraiman (2017) demonstraram que até cigarros eletrônicos comprometem a função cardiovascular. Veja como se libertar desse hábito e proteger seu coração.',
+    sections: [
+      {
+        icon: '🫁', titulo: 'Por que o tabagismo afeta o coração?',
+        texto: 'A fumaça do cigarro (e do vape) contém mais de 7.000 substâncias químicas. A nicotina aumenta a frequência cardíaca e a pressão arterial. O monóxido de carbono reduz o oxigênio no sangue. Juntos, esses fatores aceleram a aterosclerose — entupimento das artérias — que pode causar infarto e AVC mesmo em jovens.',
+        img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&q=80',
+        imgAlt: 'Pulmão saudável vs. pulmão de fumante'
+      },
+      {
+        icon: '⚡', titulo: 'Vape e narguilé: são mais seguros?',
+        texto: 'Não. O cigarro eletrônico (vape) contém nicotina e substâncias tóxicas que afetam o sistema cardiovascular. Benowitz e Fraiman (2017) demonstraram que dispositivos eletrônicos de nicotina provocam aumento de frequência cardíaca, pressão arterial e disfunção endotelial — similares ao cigarro convencional. Nenhum produto de nicotina é seguro para o coração.',
+        img: 'https://images.unsplash.com/photo-1567854685895-cf9e1b779def?w=600&q=80',
+        imgAlt: 'Vape e seus riscos'
+      },
+      {
+        icon: '✅', titulo: 'Plano prático para parar de fumar',
+        texto: null,
+        lista: [
+          '📅 Defina uma data: marque o "dia D" para parar (próximas 2 semanas)',
+          '📣 Anuncie para amigos e família — suporte social dobra o sucesso',
+          '🩹 Considere reposição de nicotina (adesivos, gomas) com orientação médica',
+          '💧 Beba muita água — ajuda a eliminar toxinas e reduzir craving',
+          '🏃 Exercício físico reduz a vontade de fumar em até 50% nas primeiras semanas',
+          '📱 Apps como "Vivo Sem Tabaco" do Ministério da Saúde ajudam a monitorar',
+          '🏥 UBS e CAPS oferecem programas GRATUITOS de cessação de tabagismo',
+        ],
+        img: null
+      },
+      {
+        icon: '🔢', titulo: 'O que acontece quando você para?',
+        texto: '20 minutos: pressão e frequência cardíaca normalizam. 12 horas: CO no sangue cai. 2 semanas: circulação melhora. 1 ano: risco de infarto cai pela metade. 5 anos: risco de AVC se iguala ao de não-fumante. Nunca é cedo demais para parar.',
+        img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80',
+        imgAlt: 'Timeline de recuperação ao parar de fumar'
+      },
+    ]
+  },
+  atividade: {
+    titulo: '⚡ Guia: Atividade Física & Telas',
+    cor: '#00f5ff',
+    intro: 'Ekelund et al. (2019) comprovaram no BMJ que qualquer volume adicional de atividade física reduz a mortalidade — e o sedentarismo digital é um risco independente. Veja como mover o corpo e reduzir o tempo de tela pode proteger seu coração.',
+    sections: [
+      {
+        icon: '❤️', titulo: 'Exercício é remédio para o coração',
+        texto: 'A atividade física regular fortalece o músculo cardíaco, reduz a pressão arterial e combate a inflamação crônica. Ekelund et al. (2019) demonstraram, em estudo publicado no BMJ, que associações dose-resposta entre atividade física e mortalidade são consistentes mesmo com volumes modestos de exercício — reforçando a importância de se mover independentemente da intensidade.',
+        img: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&q=80',
+        imgAlt: 'Jovem se exercitando'
+      },
+      {
+        icon: '📱', titulo: 'Sedentarismo digital: o novo vilão',
+        texto: 'Passar mais de 4h/dia em telas recreativas está associado a obesidade, resistência à insulina e inflamação. Widmer et al. (2015) destacam que intervenções digitais de saúde precisam considerar o tempo de tela como fator de risco independente. A luz azul das telas à noite também fragmenta o sono e impacta a saúde cardiovascular.',
+        img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80',
+        imgAlt: 'Jovens usando celular'
+      },
+      {
+        icon: '✅', titulo: 'Plano prático para se mover mais',
+        lista: [
+          '🎯 Meta da OMS: 150 min/semana de exercício moderado (caminhada rápida, ciclismo, natação)',
+          '⏱️ Regra 20-20: a cada 20 min sentado, levante por 2-3 minutos',
+          '🚶 Ande até o mercado, à escola ou ao trabalho pelo menos 3x/semana',
+          '🎮 Tente exercícios que pareçam jogos: dança, esportes coletivos, escalada',
+          '📵 Limite telas recreativas a 2h/dia — use o recurso de tempo de tela do celular',
+          '😴 Desligue telas 1h antes de dormir para proteger o sono e o coração',
+          '🤝 Encontre um parceiro de treino — aumenta a consistência em 65%',
+        ],
+        img: null
+      },
+      {
+        icon: '🏆', titulo: 'Qualquer movimento conta!',
+        texto: 'Não precisa ir à academia. Subir escadas, dançar em casa, passear com o cachorro — tudo conta. O segredo é consistência, não intensidade. Comece com 10 minutos por dia e aumente gradualmente.',
+        img: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80',
+        imgAlt: 'Pessoas dançando e se exercitando de forma divertida'
+      },
+    ]
+  },
+  alimentacao: {
+    titulo: '🍔 Guia: Alimentação Saudável',
+    cor: '#00ff88',
+    intro: 'Mozaffarian (2016) argumenta na Circulation que prioridades dietéticas são a intervenção mais poderosa na prevenção cardiovascular. Você come todos os dias — e cada refeição é uma oportunidade de proteger ou prejudicar seu coração.',
+    sections: [
+      {
+        icon: '🔬', titulo: 'Ultraprocessados e o coração',
+        texto: 'Ultraprocessados (salgadinhos, refrigerantes, fast food, embutidos) são ricos em gordura trans, sódio, açúcar e aditivos inflamatórios. Mozaffarian (2016) aponta que reformas dietéticas com foco em qualidade dos alimentos — e não apenas em macronutrientes — são as intervenções mais eficazes na prevenção cardiovascular, com impacto mensurável mesmo em jovens adultos.',
+        img: 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=600&q=80',
+        imgAlt: 'Comida saudável vs. ultraprocessados'
+      },
+      {
+        icon: '🥦', titulo: 'O poder dos vegetais e frutas',
+        texto: 'Frutas e vegetais são ricos em antioxidantes, fibras e potássio — que reduzem inflamação, protegem as artérias e controlam a pressão. A OMS recomenda pelo menos 400g/dia (5 porções). No Brasil, menos de 30% dos jovens atingem essa meta.',
+        img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&q=80',
+        imgAlt: 'Frutas e vegetais coloridos'
+      },
+      {
+        icon: '✅', titulo: 'Plano prático para comer melhor',
+        lista: [
+          '🔍 Leia o rótulo: se tem mais de 5 ingredientes ou nomes químicos, pense duas vezes',
+          '🍳 Cozinhe em casa pelo menos 3x/semana — controle total dos ingredientes',
+          '🥗 Prato ideal: ½ de vegetais, ¼ de proteína, ¼ de carboidratos integrais',
+          '💧 Troque refrigerante por água com limão, chá gelado sem açúcar ou água com gás',
+          '🍎 Tenha sempre uma fruta à mão para quando a fome bater',
+          '⏰ Faça refeições em horários regulares — o ritmo metabólico importa',
+          '📵 Coma sem tela: reduz a ingestão calórica inconsciente em 22%',
+        ],
+        img: null
+      },
+      {
+        icon: '💡', titulo: 'Regra de ouro da alimentação saudável',
+        texto: '"Coma comida de verdade, principalmente plantas, não em excesso." — Michael Pollan. No Brasil: arroz, feijão, legumes, frutas, ovos e peixe formam uma das dietas mais completas do mundo. O problema é quando substituímos isso por ultraprocessados.',
+        img: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=600&q=80',
+        imgAlt: 'Prato saudável e colorido'
+      },
+    ]
+  },
+  alcool: {
+    titulo: '🍺 Guia: Álcool e o Coração',
+    cor: '#ffe600',
+    intro: 'Kotseva et al. (2014) identificaram o álcool como fator de risco cardiovascular relevante em jovens adultos — frequentemente subestimado. Seus efeitos no coração jovem são reais e sérios. Entenda e tome decisões mais conscientes.',
+    sections: [
+      {
+        icon: '💔', titulo: 'O álcool e o coração jovem',
+        texto: 'Kotseva et al. (2014) identificaram o consumo de álcool como fator de risco cardiovascular relevante mesmo em jovens adultos. O álcool aumenta a pressão arterial, causa arritmias (especialmente após binge drinking), enfraquece o músculo cardíaco e aumenta o risco de AVC hemorrágico. Em jovens, o binge drinking (4+ doses em uma ocasião) é causa crescente de complicações cardiovasculares agudas.',
+        img: 'https://images.unsplash.com/photo-1574349901424-79ed55e0c23d?w=600&q=80',
+        imgAlt: 'Bebidas alcoólicas'
+      },
+      {
+        icon: '🧠', titulo: 'Binge drinking: o problema da geração',
+        texto: 'Binge drinking é beber 4 ou mais doses em uma única ocasião. É extremamente comum entre jovens brasileiros. Provoca: pico de pressão arterial, arritmias agudas, aumento de cortisol e inflamação sistêmica. Mesmo quem só bebe nos fins de semana pode ter episódios de binge com sérias consequências cardíacas.',
+        img: 'https://images.unsplash.com/photo-1527668752968-14dc70a27c95?w=600&q=80',
+        imgAlt: 'Festa com bebidas alcoólicas'
+      },
+      {
+        icon: '✅', titulo: 'Estratégias para reduzir o consumo',
+        lista: [
+          '🎯 Defina um limite antes de sair: máximo de 2 drinks por ocasião social',
+          '💧 Alterne: 1 drink alcoólico, 1 copo de água — reduz consumo à metade',
+          '🍹 Experimente mocktails (drinks sem álcool) — são deliciosos e socialmente aceitos',
+          '📅 Estabeleça "dias secos": pelo menos 4-5 dias por semana sem álcool',
+          '🤝 Fale com amigos sobre sua decisão — suporte social é fundamental',
+          '😴 Lembre: álcool fragmenta o sono e prejudica a recuperação do coração',
+          '🏥 Se sentir dificuldade de reduzir, o CAPS oferece apoio gratuito',
+        ],
+        img: null
+      },
+      {
+        icon: '🌟', titulo: 'É possível se divertir sem álcool',
+        texto: 'Cada vez mais jovens escolhem um estilo de vida "sober curious" — consciente sobre o álcool. Você pode curtir festas, happy hours e encontros sociais com água com gás, refrigerante, sucos ou mocktails sofisticados. Sua saúde cardiovascular agradece.',
+        img: 'https://images.unsplash.com/photo-1536935338788-846bb9981813?w=600&q=80',
+        imgAlt: 'Bebidas sem álcool coloridas e atrativas'
+      },
+    ]
+  },
+  saudeMental: {
+    titulo: '🧠 Guia: Saúde Mental & Sono',
+    cor: '#bf00ff',
+    intro: 'St-Onge et al. (2016) demonstraram na Circulation que sono e saúde mental impactam diretamente a saúde cardiometabólica. Estresse crônico e privação de sono são inimigos silenciosos do coração. Cuide da sua mente para proteger seu coração.',
+    sections: [
+      {
+        icon: '💔', titulo: 'Como o estresse danifica o coração',
+        texto: 'O estresse crônico ativa o eixo HPA (hipotálamo-hipófise-adrenal), liberando cortisol e adrenalina continuamente — aumentando pressão arterial, frequência cardíaca, inflamação e coagulação. Conforme revisado por Kotseva et al. (2014), fatores psicossociais estão entre os principais determinantes do risco cardiovascular em adultos jovens, frequentemente subestimados na prática clínica.',
+        img: 'https://images.unsplash.com/photo-1541199249251-f713e6145474?w=600&q=80',
+        imgAlt: 'Jovem estressado com o celular'
+      },
+      {
+        icon: '😴', titulo: 'Sono: o 8º pilar da saúde cardiovascular',
+        texto: 'St-Onge et al. (2016) demonstraram que a duração e qualidade do sono impactam diretamente comportamentos cardiometabólicos — publicado na Circulation. Dormir menos de 6h aumenta o risco de infarto e altera hormônios reguladores do apetite e da inflamação. Durante o sono, o coração descansa, a pressão cai e mecanismos de reparo são ativados.',
+        img: 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=600&q=80',
+        imgAlt: 'Pessoa dormindo bem'
+      },
+      {
+        icon: '✅', titulo: 'Plano prático para dormir melhor e reduzir estresse',
+        lista: [
+          '🕐 Horário fixo: durma e acorde sempre no mesmo horário, inclusive fins de semana',
+          '📵 Desligue telas 1h antes de dormir — use modo noturno se necessário',
+          '🌡️ Quarto fresco (18-21°C), escuro e silencioso favorece o sono profundo',
+          '🧘 10 min de meditação/dia reduzem cortisol e pressão arterial (apps: Calm, Headspace)',
+          '🌬️ Respiração 4-7-8: inspire 4s, segure 7s, expire 8s — ativa o sistema parassimpático',
+          '📓 Journaling: escreva 3 preocupações antes de dormir para "esvaziar" a mente',
+          '🏃 Exercício físico regular é um dos melhores ansiolíticos naturais disponíveis',
+          '💬 Terapia psicológica: não é frescura — é prevenção cardiovascular com evidência',
+        ],
+        img: null
+      },
+      {
+        icon: '🔗', titulo: 'Ansiedade, depressão e o coração',
+        texto: 'St-Onge et al. (2016) destacam que qualidade do sono e manejo do estresse são componentes essenciais da saúde cardiometabólica. Transtornos mentais impactam o coração por mecanismos biológicos (inflamação, ativação simpática) e comportamentais (sedentarismo, má alimentação). Cuidar da saúde mental É cuidar do coração.',
+        img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=80',
+        imgAlt: 'Sessão de terapia'
+      },
+    ]
+  },
+  historicoFamiliar: {
+    titulo: '🧬 Guia: Histórico Familiar',
+    cor: '#00f5ff',
+    intro: 'Kotseva et al. (2014) reforçam que o histórico familiar é um dos fatores de risco mais relevantes e menos controlados em jovens adultos. Seus genes são parte do seu destino — mas não o definem. Aja com vigilância redobrada.',
+    sections: [
+      {
+        icon: '🔬', titulo: 'Genética e risco cardiovascular',
+        texto: 'Kotseva et al. (2014) revisaram amplamente os fatores de risco cardiovascular em jovens, apontando o histórico familiar como determinante de peso. Se um familiar de primeiro grau teve infarto antes dos 55 anos (homens) ou 65 (mulheres), o risco pode ser 2-3x maior. Genes carregam predisposição — não sentença: a maioria das doenças cardiovasculares é prevenível com mudança de hábitos.',
+        img: 'https://images.unsplash.com/photo-1614935151651-0bea6508db6b?w=600&q=80',
+        imgAlt: 'DNA e genética'
+      },
+      {
+        icon: '🩺', titulo: 'O que fazer com histórico familiar positivo',
+        lista: [
+          '👨‍⚕️ Informe seu médico detalhadamente: quem teve, qual doença, com qual idade',
+          '📋 Faça check-up anual: pressão arterial, glicemia de jejum e lipidograma completo',
+          '💓 Com histórico de infarto precoce: peça ECG e avaliação com cardiologista',
+          '🧬 Pesquise hipercolesterolemia familiar — condição genética comum e tratável',
+          '📚 Documente o histórico familiar completo — quanto mais detalhe, melhor',
+          '💊 Com indicação médica, medicamentos preventivos podem ser necessários precocemente',
+        ],
+        img: null
+      },
+      {
+        icon: '💪', titulo: 'Epigenética: seus hábitos "falam" com seus genes',
+        texto: 'A epigenética mostra que hábitos saudáveis podem "silenciar" genes de risco. Exercício, alimentação anti-inflamatória, sono adequado e controle do estresse alteram a expressão genética. Mesmo com histórico familiar forte, você tem poder sobre o seu destino cardiovascular.',
+        img: 'https://images.unsplash.com/photo-1576086213369-97a306d36557?w=600&q=80',
+        imgAlt: 'Pessoa saudável e ativa'
+      },
+    ]
+  },
+  imc: {
+    titulo: '⚖️ Guia: Composição Corporal',
+    cor: '#ffe600',
+    intro: 'Poole et al. (2018) revisaram como obesidade e composição corporal afetam o sistema cardiovascular em jovens adultos. O IMC é uma referência útil, mas a distribuição de gordura importa tanto quanto o peso. Entenda como buscar equilíbrio de forma saudável.',
+    sections: [
+      {
+        icon: '❤️', titulo: 'IMC e risco cardiovascular',
+        texto: 'Poole et al. (2018), em revisão publicada no Current Cardiology Reports, destacam que a obesidade em jovens adultos compromete o sistema cardiovascular por múltiplos mecanismos: inflamação crônica, resistência à insulina, dislipidemia e hipertensão. O excesso de peso é o principal preditor de síndrome metabólica — e também abaixo do peso há riscos, pois a desnutrição afeta o músculo cardíaco.',
+        img: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&q=80',
+        imgAlt: 'Pessoa se pesando saudavelmente'
+      },
+      {
+        icon: '🏋️', titulo: 'Além do peso: gordura visceral',
+        texto: 'A gordura visceral (abdominal) libera adipocinas e citocinas inflamatórias diretamente na corrente sanguínea, afetando o coração, o fígado e o pâncreas. Segundo Poole et al. (2018), a distribuição de gordura é tão relevante quanto o IMC na avaliação do risco cardiovascular — uma circunferência abdominal elevada em jovens é sinal de alerta mesmo com peso aparentemente normal.',
+        img: 'https://images.unsplash.com/photo-1571019613576-2b22c76fd955?w=600&q=80',
+        imgAlt: 'Exercício físico e composição corporal'
+      },
+      {
+        icon: '✅', titulo: 'Estratégias saudáveis para composição ideal',
+        lista: [
+          '🎯 Foque em composição, não apenas no peso: mais músculo = metabolismo mais ativo',
+          '🥗 Priorize proteínas magras, vegetais e gorduras boas (abacate, azeite, castanhas)',
+          '🏃 Musculação + cardio: a combinação mais eficaz para composição corporal',
+          '😴 Sono adequado regula grelina e leptina — hormônios que controlam a fome',
+          '💧 Hidratação: 2-3L de água/dia ativa o metabolismo e reduz inflamação',
+          '👩‍⚕️ Consulte nutricionista: dietas radicais pioram o metabolismo a longo prazo',
+          '📊 Meta realista: 0.5-1 kg/semana — perdas mais rápidas são insustentáveis',
+        ],
+        img: null
+      },
+    ]
+  },
+};
+
+let guiaPrevScreen = 'screen-result';
+
+function showGuia(eixo) {
+  guiaPrevScreen = ST.screen || 'screen-result';
+  const g = guiasData[eixo];
+  if (!g) return;
+  document.getElementById('guide-title').textContent = `// ${g.titulo}`;
+  document.getElementById('guide-title').style.color = g.cor;
+  
+  let html = `<div class="game-card p-5 mb-5" style="border-color:${g.cor}44">
+    <p class="text-sm opacity-80 leading-relaxed" style="color:${g.cor}bb">${g.intro}</p>
+  </div>`;
+  
+  g.sections.forEach(s => {
+    html += `<div class="game-card p-5 mb-4">`;
+    html += `<div class="flex items-center gap-2 mb-3">
+      <span class="text-2xl">${s.icon}</span>
+      <div class="font-game text-sm font-bold text-white">${s.titulo}</div>
+    </div>`;
+    if (s.img) {
+      html += `<img src="${s.img}" alt="${s.imgAlt}" class="w-full rounded-xl mb-3 object-cover" style="max-height:200px; filter:brightness(0.85) saturate(1.2)">`;
+    }
+    if (s.texto) {
+      html += `<p class="text-sm opacity-70 leading-relaxed mb-2">${s.texto}</p>`;
+    }
+    if (s.lista) {
+      html += `<ul class="space-y-2">` + s.lista.map(item => 
+        `<li class="flex gap-2 text-sm opacity-70"><span style="color:${g.cor}">▶</span><span>${item}</span></li>`
+      ).join('') + `</ul>`;
+    }
+    html += `</div>`;
+  });
+  
+  document.getElementById('guide-content').innerHTML = html;
+  showScreen('screen-guide');
+}
+
+function goBackFromGuide() {
+  const target = guiaPrevScreen.startsWith('screen-') ? guiaPrevScreen : 'screen-' + guiaPrevScreen;
+  showScreen(target);
+}
+
+// ============================================================
+// MEUS RESULTADOS
+// ============================================================
+function showMyResults() {
+  // Reler dados frescos do localStorage
+  const sess = getSession();
+  if (sess) {
+    const users = getUsers();
+    const fresh = users.find(u => u.id === sess.id);
+    if (fresh) { ST.user = fresh; saveSession(fresh); }
+  }
+  // Preferir dado do localStorage (mais confiável que memória volátil)
+  const av = ST.user?.avaliacao || ST.resultado;
+  if (!av) { showScreen('screen-profile'); return; }
+  // Garantir que ST.resultado está sincronizado
+  if (av && !ST.resultado) ST.resultado = av;
+  
+  const {pontosTotais, classificacao, nivel, scores, medalhas, eixoMaiorRisco} = av;
+  const nivelColors = {Lendário:'#ffd700',Épico:'#bf00ff',Raro:'#00aaff',Incomum:'#00ff88',Comum:'#888',Iniciante:'#553'};
+  const riscoColors = {Baixo:'#00ff88',Moderado:'#ffe600',Elevado:'#ff003c'};
+  const nivelIcons = {Lendário:'👑',Épico:'💜',Raro:'💎',Incomum:'⚡',Comum:'🌟',Iniciante:'🌱'};
+  
+  document.getElementById('my-result-icon').textContent = nivelIcons[nivel]||'⚡';
+  document.getElementById('my-result-nivel').textContent = nivel?.toUpperCase()||'—';
+  document.getElementById('my-result-nivel').style.color = nivelColors[nivel]||'#fff';
+  document.getElementById('my-result-risco').textContent = `Risco ${classificacao}`;
+  document.getElementById('my-result-risco').style.color = riscoColors[classificacao]||'#fff';
+  document.getElementById('my-result-pts').textContent = pontosTotais||0;
+  document.getElementById('my-result-bg').style.background = `linear-gradient(135deg,${riscoColors[classificacao]||'#fff'}22,${nivelColors[nivel]||'#fff'}22)`;
+  
+  // Barra de progresso e faltam
+  const nivelLimites2 = [{nome:'Comum',val:300},{nome:'Incomum',val:450},{nome:'Raro',val:600},{nome:'Épico',val:750},{nome:'Lendário',val:900},{nome:'Máximo',val:1000}];
+  let proxNivel2 = '', faltam2 = 0;
+  for (const nl of nivelLimites2) { if ((pontosTotais||0) < nl.val) { proxNivel2 = nl.nome; faltam2 = nl.val - (pontosTotais||0); break; } }
+  document.getElementById('my-result-faltam').textContent = faltam2 > 0 ? `⬆️ Faltam ${faltam2} XP para ${proxNivel2}` : '🏆 Nível máximo atingido!';
+  
+  // Escala de níveis
+  const nivelEscala2 = [{nome:'Iniciante',min:0,max:299,color:'#553'},{nome:'Comum',min:300,max:449,color:'#888'},{nome:'Incomum',min:450,max:599,color:'#00ff88'},{nome:'Raro',min:600,max:749,color:'#00aaff'},{nome:'Épico',min:750,max:899,color:'#bf00ff'},{nome:'Lendário',min:900,max:1000,color:'#ffd700'}];
+  document.getElementById('my-result-scale').innerHTML = nivelEscala2.map(n=>{
+    const ativo=(pontosTotais||0)>=n.min&&(pontosTotais||0)<=n.max;
+    return `<div class="rounded-lg py-2 px-1 text-xs font-game ${ativo?'':'opacity-40'}" style="background:${n.color}22;border:1px solid ${n.color};color:${n.color};${ativo?'transform:scale(1.05)':''}">
+      <div class="font-bold" style="font-size:9px">${n.nome.toUpperCase()}</div>
+      <div style="font-size:8px;opacity:0.7">${n.min}–${n.max}</div>
+    </div>`;
+  }).join('');
+  
+  // Scores por eixo com links
+  const maxMap2={atividade:200,alimentacao:180,saudeMental:160,imc:180,alcool:80,tabagismo:130,historicoFamiliar:70};
+  const labels2={atividade:'⚡ Atividade Física & Telas',alimentacao:'🍔 Alimentação',saudeMental:'🧠 Saúde Mental & Sono',imc:'⚖️ Composição Corporal',alcool:'🍺 Álcool',tabagismo:'🚬 Tabagismo & Nicotina',historicoFamiliar:'🧬 Histórico Familiar'};
+  const sortedScores2 = scores ? Object.entries(scores).sort((a,b)=>(b[1]/maxMap2[b[0]])-(a[1]/maxMap2[a[0]])) : [];
+  document.getElementById('my-result-axes').innerHTML = sortedScores2.map(([k,v])=>{
+    const mx=maxMap2[k]||100; const p=Math.round(v/mx*100);
+    const color=p>=70?'progress-fill-green':p>=45?'progress-fill-yellow':'progress-fill-red';
+    const tc=p>=70?'#00ff88':p>=45?'#ffe600':'#ff003c';
+    return `<div>
+      <div class="flex justify-between items-center text-xs mb-1">
+        <span class="opacity-70">${labels2[k]}</span>
+        <div class="flex items-center gap-2">
+          <span style="color:${tc}" class="font-game font-bold">${v}/${mx} XP</span>
+          <button onclick="showGuia('${k}')" class="font-game" style="font-size:9px;color:#00f5ff;letter-spacing:0.05em">COMO MELHORAR ↗</button>
+        </div>
+      </div>
+      <div class="progress-neon h-3"><div class="${color} h-3 transition-all" style="width:${p}%"></div></div>
+    </div>`;
+  }).join('');
+  
+  // Medalhas
+  if (medalhas && medalhas.length) {
+    const tierClass2={Platina:'medal-platinum',Ouro:'medal-gold',Prata:'medal-silver',Bronze:'medal-bronze'};
+    document.getElementById('my-result-medals').innerHTML = medalhas.map(m=>`
+      <div class="medal-card ${tierClass2[m.tier]||'medal-bronze'}">
+        <div class="text-3xl mb-2">${m.icone||'🏅'}</div>
+        <div class="text-xs font-game font-bold" style="color:${m.cor||'#CD7F32'}">${(m.tier||'Bronze').toUpperCase()}</div>
+        <div class="text-xs font-semibold mt-1 text-white">${m.titulo||'—'}</div>
+        <div class="font-game text-xs mt-1 opacity-50">${m.percentual||0}%</div>
+      </div>`).join('');
+  }
+  
+  // Data
+  const dataEl = document.getElementById('my-result-date');
+  if (dataEl) dataEl.textContent = `Avaliação realizada em ${new Date().toLocaleDateString('pt-BR')}`;
+  
+  showScreen('screen-my-results');
+}
+
+</script>
+</body>
+</html>
